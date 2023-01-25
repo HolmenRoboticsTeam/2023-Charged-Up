@@ -4,9 +4,13 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class MAXSwerveModule extends SubsystemBase {
+  private final CANSparkMax m_driveSparkMax;
+  private final CANSparkMax m_steerSparkMax;
   /** Creates a new MAXSwerveModule. */
   public MAXSwerveModule() {}
 
