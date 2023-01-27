@@ -16,8 +16,8 @@ public class PathAndEventCommand extends CommandBase {
 
 // copy and pasted 
 public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
-  return new SequentialCommandGroup(
-       new InstantCommand(() -> {
+
+  return new SequentialCommandGroup(new InstantCommand(() -> {
          // Reset odometry for the first path you run during auto
          if(isFirstPath){
              this.resetOdometry(traj.getInitialHolonomicPose());
