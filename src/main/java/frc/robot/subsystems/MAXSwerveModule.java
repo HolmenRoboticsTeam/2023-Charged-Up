@@ -6,12 +6,16 @@ package frc.robot.subsystems;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveModuleConstants;
 
@@ -53,7 +57,7 @@ public class MAXSwerveModule extends SubsystemBase {
 
   // States
   private double m_chassisAngularOffset;
-  private SwerveModuleState m_desireState;
+  private SwerveModuleState m_desiredState;
 
   // Simulations
   private double m_simDriveCoderPosition;
@@ -125,6 +129,22 @@ public class MAXSwerveModule extends SubsystemBase {
     this.m_steerSparkMax.setIdleMode(SwerveModuleConstants.kSteerMotorIdleMode);
     this.m_driveSparkMax.setSmartCurrentLimit(SwerveModuleConstants.kDriveMotorCurrentLimit);
     this.m_steerSparkMax.setSmartCurrentLimit(SwerveModuleConstants.kSteerMotorCurrentLimit);
+
+    // Burn the configurations. If a SparkMax browns out during operation, it will maintain the above
+    // configurations
+    this.m_driveSparkMax.burnFlash();
+    this.m_steerSparkMax.burnFlash();
+
+    // Set chassis offset, the current module state angle position of the steer encoder, and zeros the drive encoder
+    this.m_chassisAngularOffset = chassisAngularOffset;
+    this.m_desiredState.angle = new Rotation2d(this.m_steerEncoder.getPosition());
+    this.m_driveEncoder.setPosition(0);
+
+    // Simulation setup
+    if (RobotBase.isSimulation()) {
+        REVPhysicsSim.getInstance().addSparkMax(this.m_driveSparkMax, DCMotor.getNEO(1));
+        REVPhysicsSim.getInstance().addSparkMax(this.m_steerSparkMax, DCMotor.getNeo550(1));
+    }
   }
 
   @Override
