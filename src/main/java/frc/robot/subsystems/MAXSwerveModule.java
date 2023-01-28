@@ -13,6 +13,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -42,7 +43,12 @@ import frc.robot.Constants.SwerveModuleConstants;
  *
  * The module can be purchased here: https://www.revrobotics.com/rev-21-3005/
  */
-public class MAXSwerveModule extends SubsystemBase {
+public class MAXSwerveModule {
+  private final int kPOSSlot = 0;
+  private final int kVELSlot = 1;
+  private final int kSIMSlot = 2;
+
+
   // Motors
   private final CANSparkMax m_driveSparkMax;
   private final CANSparkMax m_steerSparkMax;
@@ -147,7 +153,59 @@ public class MAXSwerveModule extends SubsystemBase {
     }
   }
 
-  @Override
+  // Returning Values
+  public double getDrivePosition() {
+    return this.m_driveEncoder.getPosition();
+  }
+
+  public double getDriveVelocity() {
+    return this.m_driveEncoder.getVelocity();
+  }
+
+  public double getHeadingDegrees() {
+    return this.m_steerEncoder.getPosition();
+  }
+
+  public Rotation2d getHeading() {
+    return Rotation2d.fromDegrees(this.getHeadingDegrees());
+  }
+
+  // Returning Swerve State
+  public SwerveModuleState getState() {
+    return new SwerveModuleState(this.getDriveVelocity(), this.getHeading());
+  }
+  // Returning Swerve Position
+  public SwerveModulePosition getPosition() {
+    return new SwerveModulePosition(this.getDrivePosition(), this.getHeading());
+  }
+  
+  public void resetDriveEncoder() {
+    this.m_driveEncoder.setPosition(0);
+  }
+
+  public void setDesiredState(SwerveModuleState desiredState) {
+    // Apply chassis angular offset to the desired state
+    SwerveModuleState correctedDesiredState = new SwerveModuleState();
+    correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
+    correctedDesiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(this.m_chassisAngularOffset));
+  
+    // Optimize the reference state to avoid rotating the module further than 90 degrees
+    // We want the module to take the shortest route possible whether that means its facing forwards or backwards
+    SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(correctedDesiredState, this.getHeading());
+
+    // Limit the reference angle to reduce jittering
+    // double angleSetpoint =
+    //     Math.abs(optimizedDesiredState.speedMetersPerSecond) < (ModuleConstants.kDriveTrainFreeSpeedMetersPerSecond * 0.01)
+    //     ? this.m_desiredState.angle.getDegrees()
+    //     : optimizedDesiredState.angle.getDegrees();
+
+    // Set the reference drive and steer states to the motors through the PID controllers to better control
+    // harsh changes in speed and direction
+    this.m_drivePIDController.setReference(optimizedDesiredState.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity, RobotBase.isReal() ? this.kVELSlot : this.kSIMSlot);
+    this.m_steerPIDController.setReference(optimizedDesiredState.angle.getDegrees(), CANSparkMax.ControlType.kPosition, this.kPOSSlot);
+    
+  }
+
   public void periodic() {
     // This method will be called once per scheduler run
   }
