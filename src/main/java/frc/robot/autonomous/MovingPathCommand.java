@@ -6,9 +6,9 @@ package frc.robot.autonomous;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class RobotWaitCommand extends CommandBase {
-  /** Creates a new RobotWaitCommand. */
-  public RobotWaitCommand() {
+public class MovingPathCommand extends CommandBase {
+  /** Creates a new MovingPathCommand. */
+  public MovingPathCommand() {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
