@@ -66,8 +66,8 @@ public class MAXSwerveModule {
   private SwerveModuleState m_desiredState;
 
   // Simulations
-  private double m_simDriveCoderPosition;
-  private double m_simDriveCoderVeloclty;
+  private double m_simDriveEncoderPosition;
+  private double m_simDriveEncoderVelocity;
   private double m_simAngle;
 
   /** Constructs a MAXSwerveModule.
@@ -222,10 +222,17 @@ public class MAXSwerveModule {
     // harsh changes in speed and direction
     this.m_drivePIDController.setReference(optimizedDesiredState.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity, RobotBase.isReal() ? this.kVELSlot : this.kSIMSlot);
     this.m_steerPIDController.setReference(optimizedDesiredState.angle.getDegrees(), CANSparkMax.ControlType.kPosition, this.kPOSSlot);
-    
+    this.m_desiredState = optimizedDesiredState;
+
+    if (RobotBase.isSimulation()) {
+      this.updateSimulatedDrivePosition();
+      this.m_simAngle = optimizedDesiredState.angle.getDegrees();
+    }
   }
 
-  public void periodic() {
-    // This method will be called once per scheduler run
+  private void updateSimulatedDrivePosition() {
+    this.m_simDriveEncoderVelocity = this.m_desiredState.speedMetersPerSecond;
+    double distancePer20Ms = this.m_simDriveEncoderVelocity / 50.0;
+    this.m_simDriveEncoderPosition += distancePer20Ms;
   }
 }
