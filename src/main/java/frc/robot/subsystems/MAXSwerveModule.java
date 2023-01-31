@@ -44,10 +44,10 @@ import frc.robot.Constants.SwerveModuleConstants;
  * The module can be purchased here: https://www.revrobotics.com/rev-21-3005/
  */
 public class MAXSwerveModule {
+  // SparkMAX internal PID loops.
   private final int kPOSSlot = 0;
   private final int kVELSlot = 1;
   private final int kSIMSlot = 2;
-
 
   // Motors
   private final CANSparkMax m_driveSparkMax;
@@ -153,36 +153,55 @@ public class MAXSwerveModule {
     }
   }
 
-  // Returning Values
+  /** Returning position of drive encoder in. */
   public double getDrivePosition() {
     return this.m_driveEncoder.getPosition();
   }
 
+  /** Returning speed velocity in M/S */
   public double getDriveVelocity() {
     return this.m_driveEncoder.getVelocity();
   }
 
+  /** Returning the direction the swerve module is pointing in degrees. */
   public double getHeadingDegrees() {
     return this.m_steerEncoder.getPosition();
   }
 
+  /** Returning the direction the swerve module is pointing in degrees. */
   public Rotation2d getHeading() {
     return Rotation2d.fromDegrees(this.getHeadingDegrees());
   }
 
-  // Returning Swerve State
+  /**
+   * Returning Swerve module velocity and heading.
+   * @return M/S and Degrees
+   */
   public SwerveModuleState getState() {
     return new SwerveModuleState(this.getDriveVelocity(), this.getHeading());
   }
-  // Returning Swerve Position
+
+  /**
+   * Returning Swerve module position and heading.
+   * @return Meters and Degrees
+   */
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(this.getDrivePosition(), this.getHeading());
   }
   
+  /** Resetting drive encoder. */
   public void resetDriveEncoder() {
     this.m_driveEncoder.setPosition(0);
   }
 
+  /**
+    * Sets the swerve module's speed and direction in meters/second and degrees.
+
+    Additionally corrects for offset in relation to the orgin of the chassis, as well as 
+    while also choosing the shortest turning route.
+
+    * @param desiredState Desired module velocity and heading in M/S and degrees
+    */
   public void setDesiredState(SwerveModuleState desiredState) {
     // Apply chassis angular offset to the desired state
     SwerveModuleState correctedDesiredState = new SwerveModuleState();
