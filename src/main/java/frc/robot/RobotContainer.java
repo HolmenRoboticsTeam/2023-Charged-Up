@@ -31,7 +31,7 @@ public class RobotContainer {
     /** Creates a new PathAndEventSubsystem. */
       eventMap.put("Moving Path1", new PrintCommand("Passed marker 1"));
       eventMap.put("Moving Path2", new PrintCommand("Passed marker 2"));
-      
+
     // SwerveAutoBuilder autoBuilder1 = new SwerveAutoBuilder(
     // driveSubsystem::getPose, // Pose2d supplier
     // driveSubsystem::resetPose, // Pose2d consumer, used to reset odometry at the beginning of auto
@@ -44,18 +44,18 @@ public class RobotContainer {
     // driveSubsystem );// The drive subsystem. Used to properly set the requirements of path following commands
     return null;
   }
-
+// Blue-Load1-CrossAuto-ChargeStation
   public Command blueLoad1CrossAndBalanceAuto() {
-= 
-    return null;
-  }
-
-  public Command autoPath2() {
 
     return null;
   }
+// Blue-Load3-CrossAuto
+  public Command blueLoad3CrossAuto() {
 
-  public Command autoPath3() {
+    return null;
+  }
+// Blue-Load2-CrossAuto
+  public Command blueLoad2CrossAuto() {
 
     return null;
   }
