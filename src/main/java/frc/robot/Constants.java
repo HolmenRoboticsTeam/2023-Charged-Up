@@ -8,6 +8,8 @@ import java.util.HashMap;
 
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -20,6 +22,39 @@ public final class Constants {
     public static final double kMaxAcceleration = 0;               //max acceleration in 3 m/s^2
 
     public static final HashMap<String, Command> eventMap = new HashMap<>();
+  }
+
+  public static final class DrivetrainConstants {
+    // Spark MAX CAN IDs
+    public static final int kFrontLeftDriveCANID = 1;
+    public static final int kFrontRightDriveCANID = 3;
+    public static final int kBackLeftDriveCANID = 5;
+    public static final int kBackRightDriveCANID = 7;
+
+    public static final int kFrontLeftSteeringCANID = 2;
+    public static final int kFrontRightSteeringCANID = 4;
+    public static final int kBackLeftSteeringCANID = 6;
+    public static final int kBackRightSteeringCANID = 8;
+
+    // Module Angular Offsets - Relative to the chassis in radians
+    public static final double kFrontLeftChassisAngularOffsetRadians = -Math.PI / 2.0;
+    public static final double kFrontRightChassisAngularOffsetRadians = 0.0;
+    public static final double kBackLeftChassisAngularOffsetRadians = Math.PI;
+    public static final double kBackRightChassisAngularOffsetRadians = Math.PI / 2.0;
+
+    // Chassis Configuration
+    // Distance between the centers of the right and left wheels on the robot
+    public static final double kTrackWidthMeters = Units.inchesToMeters(23.0);
+    // Distance between the centers of the front and back wheels on the robot
+    public static final double kWheelBaseMeters = Units.inchesToMeters(23.0);
+
+    public static final Translation2d[] kModuleTranslations = {
+      new Translation2d(kWheelBaseMeters / 2.0, kTrackWidthMeters / 2.0),
+      new Translation2d(kWheelBaseMeters / 2.0, -kTrackWidthMeters / 2.0),
+      new Translation2d(-kWheelBaseMeters / 2.0, kTrackWidthMeters / 2.0),
+      new Translation2d(-kWheelBaseMeters / 2.0, -kTrackWidthMeters / 2.0)
+    };
+    public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(kModuleTranslations);
   }
 
   public static final class SwerveModuleConstants {

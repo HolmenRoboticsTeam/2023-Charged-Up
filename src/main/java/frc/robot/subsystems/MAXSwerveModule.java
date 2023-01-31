@@ -188,7 +188,7 @@ public class MAXSwerveModule {
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(this.getDrivePosition(), this.getHeading());
   }
-  
+
   /** Resetting drive encoder. */
   public void resetDriveEncoder() {
     this.m_driveEncoder.setPosition(0);
@@ -207,7 +207,7 @@ public class MAXSwerveModule {
     SwerveModuleState correctedDesiredState = new SwerveModuleState();
     correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
     correctedDesiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(this.m_chassisAngularOffset));
-  
+
     // Optimize the reference state to avoid rotating the module further than 90 degrees
     // We want the module to take the shortest route possible whether that means its facing forwards or backwards
     SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(correctedDesiredState, this.getHeading());
