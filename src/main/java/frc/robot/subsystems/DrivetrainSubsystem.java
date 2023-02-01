@@ -127,8 +127,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
     );
 
     // Motion profiling
+    this.m_smoothSteerController = new ProfiledPIDController(
+      DrivetrainConstants.kSteerP,
+      DrivetrainConstants.kSteerI,
+      DrivetrainConstants.kSteerD,
+      DrivetrainConstants.kSteerControllerConstraints
+    );
 
     // Simulation & reset the gyro
+    // self.setSimulatedAngle(0);
   }
 
   @Override

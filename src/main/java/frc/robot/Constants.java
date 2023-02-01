@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.PIDConstants;
 import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -31,6 +32,13 @@ public final class Constants {
   }
 
   public static final class DrivetrainConstants {
+    // Driving Parameters - Note that these are not the maximum capable speeds of the robot, rather the
+    // reasonably allowed maximums
+    public static final double kMaxSpeedMetersPerSecond = 4.8;
+    public static final double kMaxAngularSpeed = 2.0 * Math.PI;  // radians per second
+    public static final double kMaxAngularSpeedSquared = 2.0 * Math.PI;  // radians per second
+    public static final double kSwerveTargetingOffset = 630.0;  // degrees
+
     // Spark MAX CAN IDs
     public static final int kFrontLeftDriveCANID = 1;
     public static final int kFrontRightDriveCANID = 3;
@@ -61,6 +69,14 @@ public final class Constants {
       new Translation2d(-kWheelBaseMeters / 2.0, -kTrackWidthMeters / 2.0)
     };
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(kModuleTranslations);
+
+    public static final double kSteerP = 0.1;
+    public static final double kSteerI = 0.01;
+    public static final double kSteerD = 0.0001;
+    public static final TrapezoidProfile.Constraints kSteerControllerConstraints = new TrapezoidProfile.Constraints(
+        kMaxAngularSpeed,
+        kMaxAngularSpeedSquared
+    );
   }
 
   public static final class SwerveModuleConstants {
