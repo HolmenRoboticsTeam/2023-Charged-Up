@@ -5,9 +5,10 @@
 package frc.robot;
 
 import java.util.HashMap;
+import com.pathplanner.lib.PathConstraints;
 
+import com.pathplanner.lib.auto.PIDConstants;
 import com.revrobotics.CANSparkMax.IdleMode;
-
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
@@ -22,6 +23,11 @@ public final class Constants {
     public static final double kMaxAcceleration = 0;               //max acceleration in 3 m/s^2
 
     public static final HashMap<String, Command> eventMap = new HashMap<>();
+
+    public static final PIDConstants kPIDTranslationAuto = new PIDConstants(5.0, 0.0, 0.0);
+    public static final PIDConstants kPIDRotationAuto = new PIDConstants(0.5, 0.0, 0.0);
+
+    public static final PathConstraints kPathConstraintsAuto = new PathConstraints(kMaxVelocity, kMaxAcceleration);
   }
 
   public static final class DrivetrainConstants {
@@ -97,6 +103,9 @@ public final class Constants {
 
     public static final int kDriveMotorCurrentLimit = 50;  // Amps
     public static final int kSteerMotorCurrentLimit = 20;  // Amps
+
+     // temporary to get rid of red line in Robot Container
+    public static final SwerveDriveKinematics kinematicsAuto = new SwerveDriveKinematics(null);
   }
 
 
