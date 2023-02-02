@@ -8,11 +8,17 @@ import java.util.Hashtable;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.hal.SimDouble;
+import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
@@ -127,12 +133,171 @@ public class DrivetrainSubsystem extends SubsystemBase {
     );
 
     // Motion profiling
+    this.m_smoothSteerController = new ProfiledPIDController(
+      DrivetrainConstants.kSteerP,
+      DrivetrainConstants.kSteerI,
+      DrivetrainConstants.kSteerD,
+      DrivetrainConstants.kSteerControllerConstraints
+    );
 
     // Simulation & reset the gyro
+    this.setSimulatedAngle(0);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
   }
+
+  /**
+    * Returns the currently-estimated pose of the robot.
+    *
+    * @return The pose.
+    */
+  public Pose2d getPose() {
+   return this.m_odometry.getPoseMeters();
+  }
+
+  /**
+    * Sets the odometry to the specified pose.
+    *
+    * @param pose The pose to which to set the odometry.
+    */
+  public void setPose(Pose2d pose) {
+    this.m_odometry.resetPosition(
+      Rotation2d.fromDegrees(-this.m_navX.getRotation2d().getDegrees()),
+      new SwerveModulePosition[] {
+          this.m_swerveModules.get(SwerveModule.FRONT_LEFT).getPosition(),
+          this.m_swerveModules.get(SwerveModule.FRONT_RIGHT).getPosition(),
+          this.m_swerveModules.get(SwerveModule.BACK_LEFT).getPosition(),
+          this.m_swerveModules.get(SwerveModule.BACK_RIGHT).getPosition()
+      },
+      pose
+    );
+  }
+
+  /**
+    * Method to drive the robot using joystick info.
+    *
+    * @param xSpeed        Speed of the robot in the x direction (forward).
+    * @param ySpeed        Speed of the robot in the y direction (sideways).
+    * @param rot           Angular rate of the robot.
+    * @param fieldRelative Whether the provided x and y speeds are relative to the
+    *                      field.
+    */
+  public void drive(double throttle, double strafe, double rotation, boolean fieldRelative) {
+    // Adjust input based on max speed
+    throttle *= DrivetrainConstants.kMaxSpeedMetersPerSecond;
+    strafe *= DrivetrainConstants.kMaxSpeedMetersPerSecond;
+    rotation *= DrivetrainConstants.kMaxAngularSpeed;
+
+    SwerveModuleState[] swerveModuleStates = DrivetrainConstants.kDriveKinematics.toSwerveModuleStates(
+      fieldRelative
+        ? ChassisSpeeds.fromFieldRelativeSpeeds(throttle, strafe, rotation, Rotation2d.fromDegrees(-this.m_navX.getRotation2d().getDegrees()))
+        : new ChassisSpeeds(throttle, strafe, rotation)
+    );
+
+    this.setModuleStates(swerveModuleStates);
+  }
+
+  public void drive(double throttle, double strafe, double xRotation, double yRotation, boolean fieldRelative) {
+    // Calculate the current angle of the robot
+    double currentAngle = Math.abs(this.m_navX.getAngle() % 360);
+    if (this.m_navX.getAngle() < 0) currentAngle = 360 - currentAngle;
+
+    // Use SOH CAH (TOA) to determine the desired angle
+    // Apply a bias to ensure the front of the robot follows the joystick
+    double desiredAngle = Math.atan2(yRotation, xRotation);
+    desiredAngle = (Units.radiansToDegrees(desiredAngle) + DrivetrainConstants.kSwerveTargetingOffset) % 360;
+
+    // Calculate the theta difference between current and desired
+    // Then calculate the shortest direction to take from current to desired (i.e. -90 CCW is shorter than 270 CW)
+    double theta = Math.abs(desiredAngle - currentAngle) % 360;
+    double thetaShortened = theta > 180 ? 360 - theta : theta;
+
+    // Calculate corrective action
+
+    // Send the drive speed to the main drive method
+  }
+
+  /**
+    * Returns the heading of the robot.
+    *
+    * @return the robot's heading in degrees, from -180 to 180
+    */
+  public double getHeadingDegrees() {
+    return Math.IEEEremainder(this.m_navX.getAngle(), 360);
+  }
+
+  /**
+    * Returns the heading of the robot.
+    *
+    * @return the robot's heading in degrees, from -180 to 180 as Rotation2d
+    */
+  public Rotation2d getHeading() {
+    return Rotation2d.fromDegrees(this.getHeadingDegrees());
+  }
+
+  /**
+    * Returns the turn rate of the robot.
+    *
+    * @return The turn rate of the robot, in degrees per second
+    */
+  // public get... 
+  public double getTurnRate() {
+    return this.m_navX.getRate();
+  }
+
+  /**
+   * Getting the positions and heading of each Swerve Module
+   * @return Meters and Degrees
+   */
+  public SwerveModulePosition[] getModulePositions() {
+    return new SwerveModulePosition[] {
+      this.m_swerveModules.get(SwerveModule.FRONT_LEFT).getPosition(),
+      this.m_swerveModules.get(SwerveModule.FRONT_RIGHT).getPosition(),
+      this.m_swerveModules.get(SwerveModule.BACK_LEFT).getPosition(),
+      this.m_swerveModules.get(SwerveModule.BACK_RIGHT).getPosition()
+    };
+  }
+
+  /**
+   * Getting swerve speed and direction.
+   * @return M/S and Degrees
+   */
+  public SwerveModuleState[] getModuleStates() {
+    return new SwerveModuleState[] {
+      this.m_swerveModules.get(SwerveModule.FRONT_LEFT).getState(),
+      this.m_swerveModules.get(SwerveModule.FRONT_RIGHT).getState(),
+      this.m_swerveModules.get(SwerveModule.BACK_LEFT).getState(),
+      this.m_swerveModules.get(SwerveModule.BACK_RIGHT).getState()
+    };
+  }
+
+  /**
+    * Sets the swerve speed and direction.
+    *
+    * @param desiredStates The desired SwerveModule states.
+    */
+  public void setModuleStates(SwerveModuleState[] desiredStates) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DrivetrainConstants.kMaxSpeedMetersPerSecond);
+
+    this.m_swerveModules.get(SwerveModule.FRONT_LEFT).setDesiredState(desiredStates[SwerveModule.FRONT_LEFT.getValue()]);
+    this.m_swerveModules.get(SwerveModule.FRONT_RIGHT).setDesiredState(desiredStates[SwerveModule.FRONT_RIGHT.getValue()]);
+    this.m_swerveModules.get(SwerveModule.BACK_LEFT).setDesiredState(desiredStates[SwerveModule.BACK_LEFT.getValue()]);
+    this.m_swerveModules.get(SwerveModule.BACK_RIGHT).setDesiredState(desiredStates[SwerveModule.BACK_RIGHT.getValue()]);
+  }
+
+  /** Zeroes the heading of the robot. */
+  public void zeroHeading() {
+    this.m_navX.reset();
+    this.m_simYaw = 0;
+  }
+
+  private void setSimulatedAngle(double angle) {
+    int dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
+    SimDouble simAngle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(dev, "Yaw"));
+    simAngle.set(angle);
+  }
+
 }
