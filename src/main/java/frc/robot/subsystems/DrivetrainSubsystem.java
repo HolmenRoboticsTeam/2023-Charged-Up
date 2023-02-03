@@ -216,8 +216,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
     double thetaShortened = theta > 180 ? 360 - theta : theta;
 
     // Calculate corrective action
+    double sign = -1;
+    if (currentAngle - desiredAngle >= 0 && currentAngle - desiredAngle <= 180) {
+      sign = 1;
+    } else if (currentAngle - desiredAngle <= -180 && currentAngle - desiredAngle >= -360) {
+      sign = 1;
+    }
+    double correctiveTheta = thetaShortened * sign;  // Figure out which way to turn
+    double correctiveTurn = -this.m_smoothSteerController.calculate(correctiveTheta);
 
     // Send the drive speed to the main drive method
+    this.drive(throttle, strafe, correctiveTheta, fieldRelative);
   }
 
   /**
