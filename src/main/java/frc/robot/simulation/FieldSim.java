@@ -6,6 +6,7 @@ package frc.robot.simulation;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DrivetrainConstants;
@@ -44,10 +45,22 @@ public class FieldSim {
           .plus(this.m_drivetrainSubsystem.getPose().getTranslation());
       this.m_swerveModulePoses[i] = new Pose2d(
         updatedPosition,
-        this.m_drivetrainSubsystem.getModule
+        this.m_drivetrainSubsystem
+          .getModule(DrivetrainSubsystem.SwerveModule.toEnum(i))
+          .getState().angle
+          .plus(this.m_drivetrainSubsystem.getHeading())
+        );
     }
+
+    this.m_field2d.getObject("Swerve Modules").setPoses(this.m_swerveModulePoses);
   }
 
+  public void periodic() {
+    this.updateRobotPose();
+    if (RobotBase.isSimulation()) this.simulationPeriodic();
+  }
+
+  public void simulationPeriodic() {}
 
 }
 

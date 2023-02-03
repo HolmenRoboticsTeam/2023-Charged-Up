@@ -142,6 +142,7 @@ public class MAXSwerveModule {
 
     // Set chassis offset, the current module state angle position of the steer encoder, and zeros the drive encoder
     this.m_chassisAngularOffset = chassisAngularOffset;
+    this.m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
     this.m_desiredState.angle = new Rotation2d(this.m_steerEncoder.getPosition());
     this.m_driveEncoder.setPosition(0);
 

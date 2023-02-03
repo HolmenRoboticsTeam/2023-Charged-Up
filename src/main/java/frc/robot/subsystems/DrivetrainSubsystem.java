@@ -129,7 +129,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             this.m_swerveModules.get(SwerveModule.BACK_LEFT).getPosition(),
             this.m_swerveModules.get(SwerveModule.BACK_RIGHT).getPosition()
         },
-        new Pose2d(1.80, 4.88, Rotation2d.fromDegrees(0)) // Change to getHeading
+        new Pose2d(1.80, 4.88, this.getHeading())
     );
 
     // Motion profiling
@@ -154,7 +154,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public void simulationPeriodic() {
     ChassisSpeeds chassisSpeed = DrivetrainConstants.kDriveKinematics.toChassisSpeeds(this.getModuleStates());
     this.m_simYaw += chassisSpeed.omegaRadiansPerSecond * 0.02;
-    this.setSimulatedAngle(-Units.radiansToDegrees(m_simYaw));
+    this.setSimulatedAngle(-Units.radiansToDegrees(this.m_simYaw));
   }
 
   /**
@@ -270,7 +270,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     * @return The turn rate of the robot, in degrees per second
     */
   public double getTurnRate() {
-    return this.m_navX.getRate();
+    return this.m_navX.getRate() * (DrivetrainConstants.kGyroInverted ? - 1.0 : 1.0);
   }
 
   /**
@@ -307,10 +307,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DrivetrainConstants.kMaxSpeedMetersPerSecond);
 
-    this.m_swerveModules.get(SwerveModule.FRONT_LEFT).setDesiredState(desiredStates[SwerveModule.FRONT_LEFT.getValue()]);
-    this.m_swerveModules.get(SwerveModule.FRONT_RIGHT).setDesiredState(desiredStates[SwerveModule.FRONT_RIGHT.getValue()]);
-    this.m_swerveModules.get(SwerveModule.BACK_LEFT).setDesiredState(desiredStates[SwerveModule.BACK_LEFT.getValue()]);
-    this.m_swerveModules.get(SwerveModule.BACK_RIGHT).setDesiredState(desiredStates[SwerveModule.BACK_RIGHT.getValue()]);
+    this.m_swerveModules.get(SwerveModule.FRONT_LEFT).setDesiredState(desiredStates[0]);
+    this.m_swerveModules.get(SwerveModule.FRONT_RIGHT).setDesiredState(desiredStates[1]);
+    this.m_swerveModules.get(SwerveModule.BACK_LEFT).setDesiredState(desiredStates[2]);
+    this.m_swerveModules.get(SwerveModule.BACK_RIGHT).setDesiredState(desiredStates[3]);
   }
 
   /** Zeroes the heading of the robot. */
