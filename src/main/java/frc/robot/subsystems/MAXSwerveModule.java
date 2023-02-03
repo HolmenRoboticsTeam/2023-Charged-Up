@@ -17,7 +17,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveModuleConstants;
 
 /**
@@ -155,17 +154,17 @@ public class MAXSwerveModule {
 
   /** Returning position of drive encoder in. */
   public double getDrivePosition() {
-    return this.m_driveEncoder.getPosition();
+    return RobotBase.isReal() ? this.m_driveEncoder.getPosition() : this.m_simDriveEncoderPosition;
   }
 
   /** Returning speed velocity in M/S */
   public double getDriveVelocity() {
-    return this.m_driveEncoder.getVelocity();
+    return RobotBase.isReal() ? this.m_driveEncoder.getVelocity() : this.m_simDriveEncoderVelocity;
   }
 
   /** Returning the direction the swerve module is pointing in degrees. */
   public double getHeadingDegrees() {
-    return this.m_steerEncoder.getPosition();
+    return RobotBase.isReal() ? this.m_steerEncoder.getPosition() : this.m_simAngle;
   }
 
   /** Returning the direction the swerve module is pointing in degrees. */
