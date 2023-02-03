@@ -147,6 +147,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    this.m_odometry.update(this.getHeading(), this.getModulePositions());
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    ChassisSpeeds chassisSpeed = DrivetrainConstants.kDriveKinematics.toChassisSpeeds(this.getModuleStates());
+    this.m_simYaw += chassisSpeed.omegaRadiansPerSecond * 0.02;
+    this.setSimulatedAngle(-Units.radiansToDegrees(m_simYaw));
   }
 
   /**
@@ -155,7 +163,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     * @return The pose.
     */
   public Pose2d getPose() {
-   return this.m_odometry.getPoseMeters();
+    return this.m_odometry.getPoseMeters();
   }
 
   /**
@@ -226,7 +234,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     double correctiveTurn = -this.m_smoothSteerController.calculate(correctiveTheta);
 
     // Send the drive speed to the main drive method
-    this.drive(throttle, strafe, correctiveTheta, fieldRelative);
+    this.drive(throttle, strafe, correctiveTurn, fieldRelative);
   }
 
   /**
@@ -236,6 +244,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
     */
   public double getHeadingDegrees() {
     return Math.IEEEremainder(this.m_navX.getAngle(), 360);
+  }
+
+  /**
+  * Returns the desired swerve module.
+  * @param desiredModule Which corner module to get.
+  * @return The module at the corner specified.
+  */
+  public MAXSwerveModule getModule(SwerveModule desiredModule) {
+    return this.m_swerveModules.get(desiredModule);
   }
 
   /**
@@ -252,7 +269,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     *
     * @return The turn rate of the robot, in degrees per second
     */
-  // public get... 
   public double getTurnRate() {
     return this.m_navX.getRate();
   }
@@ -301,6 +317,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public void zeroHeading() {
     this.m_navX.reset();
     this.m_simYaw = 0;
+  }
+
+  /** Resets the drive encoders to currently read a position of 0. */
+  public void resetDriveEncoders() {
+    this.getModule(SwerveModule.FRONT_LEFT).resetDriveEncoder();
+    this.getModule(SwerveModule.FRONT_RIGHT).resetDriveEncoder();
+    this.getModule(SwerveModule.BACK_LEFT).resetDriveEncoder();
+    this.getModule(SwerveModule.BACK_RIGHT).resetDriveEncoder();
   }
 
   private void setSimulatedAngle(double angle) {
