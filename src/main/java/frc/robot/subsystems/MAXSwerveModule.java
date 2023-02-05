@@ -61,8 +61,8 @@ public class MAXSwerveModule {
   private final SparkMaxPIDController m_steerPIDController;
 
   // States
-  private double m_chassisAngularOffset;
-  private SwerveModuleState m_desiredState;
+  private double m_chassisAngularOffset = 0.0;
+  private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
 
   // Simulations
   private double m_simDriveEncoderPosition;
@@ -142,6 +142,7 @@ public class MAXSwerveModule {
 
     // Set chassis offset, the current module state angle position of the steer encoder, and zeros the drive encoder
     this.m_chassisAngularOffset = chassisAngularOffset;
+    this.m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
     this.m_desiredState.angle = new Rotation2d(this.m_steerEncoder.getPosition());
     this.m_driveEncoder.setPosition(0);
 
@@ -196,7 +197,7 @@ public class MAXSwerveModule {
   /**
     * Sets the swerve module's speed and direction in meters/second and degrees.
 
-    Additionally corrects for offset in relation to the orgin of the chassis, as well as 
+    Additionally corrects for offset in relation to the orgin of the chassis, as well as
     while also choosing the shortest turning route.
 
     * @param desiredState Desired module velocity and heading in M/S and degrees
@@ -209,7 +210,7 @@ public class MAXSwerveModule {
 
     // Optimize the reference state to avoid rotating the module further than 90 degrees
     // We want the module to take the shortest route possible whether that means its facing forwards or backwards
-    SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(correctedDesiredState, this.getHeading());
+    SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(correctedDesiredState, this.getHeading()); // this.getState().angle
 
     // Limit the reference angle to reduce jittering
     // double angleSetpoint =
