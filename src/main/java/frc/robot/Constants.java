@@ -20,8 +20,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 public final class Constants {
 
   public static final class AutonomousConstants {
-    public static final double kMaxVelocity = 0;                   //max velocity in 4 m/s
-    public static final double kMaxAcceleration = 0;               //max acceleration in 3 m/s^2
+    public static final double kMaxVelocity = 2.0;                   //max velocity in 4 m/s
+    public static final double kMaxAcceleration = 3.0;               //max acceleration in 3 m/s^2
 
     public static final HashMap<String, Command> eventMap = new HashMap<>();
 
@@ -77,6 +77,8 @@ public final class Constants {
         kMaxAngularSpeed,
         kMaxAngularSpeedSquared
     );
+
+    public static final boolean kGyroInverted = false;
   }
 
   public static final class SwerveModuleConstants {
@@ -120,8 +122,6 @@ public final class Constants {
     public static final int kDriveMotorCurrentLimit = 50;  // Amps
     public static final int kSteerMotorCurrentLimit = 20;  // Amps
 
-     // temporary to get rid of red line in Robot Container
-    public static final SwerveDriveKinematics kinematicsAuto = new SwerveDriveKinematics(null);
   }
 
   public static class OIConstants {
