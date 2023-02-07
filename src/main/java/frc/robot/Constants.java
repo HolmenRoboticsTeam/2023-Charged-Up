@@ -124,5 +124,9 @@ public final class Constants {
 
   }
 
+  public static class OIConstants {
+    public static final double kcontrollerDeadband = 0.12;
+  }
+
 
 }
