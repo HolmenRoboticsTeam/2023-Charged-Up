@@ -15,7 +15,7 @@ public class ControlledHeadingDriveCommand extends CommandBase {
     private final XboxController m_controller;
     private final DrivetrainSubsystem m_drivetrainSubsystem;
     
-    public ControlledHeadingDriveCommand(XboxController m_controller, DrivetrainSubsystem m_drivetrainSubsystem) {
+    public ControlledHeadingDriveCommand(XboxController controller, DrivetrainSubsystem drivetrainSubsystem) {
       this.m_controller = m_controller;
       this.m_drivetrainSubsystem = m_drivetrainSubsystem;
       this.addRequirements(m_drivetrainSubsystem);
@@ -41,7 +41,7 @@ public class ControlledHeadingDriveCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    this.m_drivetrainSubsystem.drive(0, 0, 0, 0, false);
+    this.m_drivetrainSubsystem.drive(0, 0, 0, 0, true);
   }
 
   // Returns true when the command should end.

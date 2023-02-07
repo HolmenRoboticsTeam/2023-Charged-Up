@@ -17,7 +17,7 @@ public class DefaultDriveCommand extends CommandBase {
   private final DrivetrainSubsystem m_drivetrainSubsystem;
 
   
-  public DefaultDriveCommand(XboxController m_controller, DrivetrainSubsystem m_drivetrainSubsystem) {
+  public DefaultDriveCommand(XboxController controller, DrivetrainSubsystem drivetrainSubsystem) {
     this.m_controller = m_controller;
     this.m_drivetrainSubsystem = m_drivetrainSubsystem;
     this.addRequirements(m_drivetrainSubsystem);
