@@ -22,6 +22,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.OIConstants;
 
 public class DrivetrainSubsystem extends SubsystemBase {
 
@@ -232,9 +233,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
     double correctiveTheta = thetaShortened * sign;  // Figure out which way to turn
     double correctiveTurn = -this.m_smoothSteerController.calculate(correctiveTheta);
+    if (Math.abs(xRotation) < OIConstants.kcontrollerDeadband && Math.abs(yRotation) < OIConstants.kcontrollerDeadband) correctiveTurn = 0;
 
     // Send the drive speed to the main drive method
     this.drive(throttle, strafe, correctiveTurn, fieldRelative);
+    System.out.println(throttle);
   }
 
   /**
