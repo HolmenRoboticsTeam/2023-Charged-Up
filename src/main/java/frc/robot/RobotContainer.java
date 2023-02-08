@@ -48,7 +48,7 @@ public class RobotContainer {
 
     configureBindings();
     this.m_fieldSim.initSim();
-    this.m_drivetrainSubsystem.setDefaultCommand(this.m_controlledHeadingDriveCommand);
+    this.m_drivetrainSubsystem.setDefaultCommand(this.m_defaultDriveCommand);
   }
 
   private void configureBindings() {}

@@ -35,7 +35,6 @@ public class DefaultDriveCommand extends CommandBase {
     double throttle = MathUtil.applyDeadband(-this.m_controller.getLeftY(), OIConstants.kcontrollerDeadband);
     double strafe = MathUtil.applyDeadband(-this.m_controller.getLeftX(), OIConstants.kcontrollerDeadband);
     double rotation =  MathUtil.applyDeadband(this.m_controller.getRightX(), OIConstants.kcontrollerDeadband);
-
     this.m_drivetrainSubsystem.drive(throttle, strafe, rotation, true);
   }
 
