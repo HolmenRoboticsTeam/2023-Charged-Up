@@ -13,32 +13,46 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.revrobotics.REVPhysicsSim;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveModuleConstants;
+import frc.robot.commands.ControlledHeadingDriveCommand;
+import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.simulation.FieldSim;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 
 public class RobotContainer {
-  private DrivetrainSubsystem m_drivetrainSubsystem;
+  private final DrivetrainSubsystem m_drivetrainSubsystem;
+  private final XboxController m_driveController;
+  private final ControlledHeadingDriveCommand m_controlledHeadingDriveCommand;
+  private final DefaultDriveCommand m_defaultDriveCommand;
+  private final FieldSim m_fieldSim;
 
-private final FieldSim m_fieldSim;
+
+
 
 
   public RobotContainer() {
     this.m_drivetrainSubsystem = new DrivetrainSubsystem();
-    this.m_fieldSim = new FieldSim(m_drivetrainSubsystem);
+    this.m_driveController = new XboxController(OIConstants.kdriveControllerPort);
+    this.m_controlledHeadingDriveCommand = new ControlledHeadingDriveCommand(this.m_driveController, this.m_drivetrainSubsystem);
+    this.m_defaultDriveCommand = new DefaultDriveCommand(this.m_driveController, this.m_drivetrainSubsystem);
+    this.m_fieldSim = new FieldSim(this.m_drivetrainSubsystem);
+
     configureBindings();
     this.m_fieldSim.initSim();
+    this.m_drivetrainSubsystem.setDefaultCommand(this.m_controlledHeadingDriveCommand);
   }
 
   private void configureBindings() {}
-  
+
 
   public Command buildSwerveAutoBuilder(List<PathPlannerTrajectory> pathGroup, HashMap<String, Command> eventMap) {
 
@@ -107,4 +121,6 @@ private final FieldSim m_fieldSim;
   public void simulationPeriodic() {
     REVPhysicsSim.getInstance().run();
   }
+  
+  
 }
