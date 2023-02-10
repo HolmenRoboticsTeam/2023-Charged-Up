@@ -195,6 +195,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     *                      field.
     */
   public void drive(double throttle, double strafe, double rotation, boolean fieldRelative) {
+
+    // rate limiter? spew
+
     // Adjust input based on max speed
     throttle *= DrivetrainConstants.kMaxSpeedMetersPerSecond;
     strafe *= DrivetrainConstants.kMaxSpeedMetersPerSecond;
@@ -210,6 +213,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   public void drive(double throttle, double strafe, double xRotation, double yRotation, boolean fieldRelative) {
+
     // Calculate the current angle of the robot
     double currentAngle = Math.abs(this.m_navX.getAngle() % 360);
     if (this.m_navX.getAngle() < 0) currentAngle = 360 - currentAngle;

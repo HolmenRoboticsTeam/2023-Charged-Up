@@ -36,9 +36,6 @@ public class RobotContainer {
   private final FieldSim m_fieldSim;
 
 
-
-
-
   public RobotContainer() {
     this.m_drivetrainSubsystem = new DrivetrainSubsystem();
     this.m_driveController = new XboxController(OIConstants.kdriveControllerPort);
@@ -47,8 +44,12 @@ public class RobotContainer {
     this.m_fieldSim = new FieldSim(this.m_drivetrainSubsystem);
 
     configureBindings();
+
+    // HOW DOES ROBOT DRIVE HERE
+    
     this.m_fieldSim.initSim();
     this.m_drivetrainSubsystem.setDefaultCommand(this.m_defaultDriveCommand);
+
   }
 
   private void configureBindings() {}
