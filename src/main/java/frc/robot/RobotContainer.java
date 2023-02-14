@@ -13,11 +13,14 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.revrobotics.REVPhysicsSim;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OIConstants;
@@ -30,6 +33,7 @@ import frc.robot.commands.DefaultDriveCommand2;
 import frc.robot.simulation.FieldSim2;
 // import frc.robot.subsystems.DrivetrainSubsystem; // Original
 import frc.robot.subsystems.DriveTrainSubsystem2;
+import frc.robot.subsystems.GripperSubsystem;
 
 
 public class RobotContainer {
@@ -38,7 +42,14 @@ public class RobotContainer {
   private final ControlledHeadingDriveCommand2 m_controlledHeadingDriveCommand2;
   private final DefaultDriveCommand2 m_defaultDriveCommand;
   private final FieldSim2 m_fieldSim;
+  private final GripperSubsystem m_gripperSubsytem;
+  private final XboxController m_armController;
 
+  private final JoystickButton m_armCompEnableButton;
+  private final JoystickButton m_armCompDisableButton;
+
+  private final JoystickButton m_armOpenGripperButton;
+  private final JoystickButton m_armCloseGripperButton;
 // Original 
   // private final DrivetrainSubsystem m_drivetrainSubsystem;
   // private final XboxController m_driveController;
@@ -48,11 +59,18 @@ public class RobotContainer {
 
   public RobotContainer() {
     this.m_DriveTrainSubsystem2 = new DriveTrainSubsystem2();
-    this.m_driveController = new XboxController(OIConstants.kdriveControllerPort);
+    this.m_driveController = new XboxController(OIConstants.kDriveControllerPort);
     this.m_controlledHeadingDriveCommand2 = new ControlledHeadingDriveCommand2(this.m_driveController, this.m_DriveTrainSubsystem2);
     this.m_defaultDriveCommand = new DefaultDriveCommand2(this.m_driveController, this.m_DriveTrainSubsystem2);
     this.m_fieldSim = new FieldSim2(this.m_DriveTrainSubsystem2);
+    this.m_armController = new XboxController(OIConstants.kArmControllerPort);
+    this.m_gripperSubsytem = new GripperSubsystem();
+    
+    this.m_armCompEnableButton = new JoystickButton(this.m_armController, XboxController.Button.kA.value);
+    this.m_armCompDisableButton = new JoystickButton(this.m_armController, XboxController.Button.kB.value);
 
+    this.m_armOpenGripperButton = new JoystickButton(this.m_armController, XboxController.Button.kRightBumper.value);
+    this.m_armCloseGripperButton = new JoystickButton(this.m_armController, XboxController.Button.kLeftBumper.value);
   // Original
     // this.m_drivetrainSubsystem = new DrivetrainSubsystem();
     // this.m_driveController = new XboxController(OIConstants.kdriveControllerPort);
@@ -70,7 +88,12 @@ public class RobotContainer {
 
   }
 
-  private void configureBindings() {}
+  private void configureBindings() {
+  this.m_armCompEnableButton.onTrue(new RunCommand(this.m_gripperSubsytem::compEnable, this.m_gripperSubsytem));
+  this.m_armCompDisableButton.onTrue(new RunCommand(this.m_gripperSubsytem::compDisable, this.m_gripperSubsytem));
+  this.m_armOpenGripperButton.onTrue(new RunCommand(this.m_gripperSubsytem::open, this.m_gripperSubsytem));
+  this.m_armCloseGripperButton.onTrue(new RunCommand(this.m_gripperSubsytem::close, this.m_gripperSubsytem));
+  }
 
 
   public Command buildSwerveAutoBuilder(List<PathPlannerTrajectory> pathGroup, HashMap<String, Command> eventMap) {

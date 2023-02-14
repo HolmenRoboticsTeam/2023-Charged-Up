@@ -131,8 +131,13 @@ public final class Constants {
 
   }
 
+  public static class GripperConstants {
+    public static final int kForwardChannel = 1;
+    public static final int kReverseChannel = 2;
+  }
   public static class OIConstants {
-    public static final double kcontrollerDeadband = 0.12;
-    public static final int kdriveControllerPort = 0;
+    public static final double kControllerDeadband = 0.12;
+    public static final int kDriveControllerPort = 0;
+    public static final int kArmControllerPort = 0;
   }
 }
