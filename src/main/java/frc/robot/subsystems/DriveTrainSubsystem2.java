@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.subsystems.DrivetrainSubsystem.SwerveModule;
 import frc.utils.SwerveUtils;
 
 public class DriveTrainSubsystem2 extends SubsystemBase {
@@ -274,15 +273,6 @@ public class DriveTrainSubsystem2 extends SubsystemBase {
     double xSpeedCommanded;
     double ySpeedCommanded;
 
-
-  SwerveModuleState[] swerveModuleStates = DrivetrainConstants.kDriveKinematics.toSwerveModuleStates(
-    fieldRelative
-      ? ChassisSpeeds.fromFieldRelativeSpeeds(throttle, strafe, rotation, Rotation2d.fromDegrees(-this.m_gyro.getRotation2d().getDegrees()))
-      : new ChassisSpeeds(throttle, strafe, rotation)
-  );
-
-  this.setModuleStates(swerveModuleStates);
-
     // everything below is for rate
     if (rateLimit) {
       // Convert XY to polar for rate limiting
@@ -341,6 +331,8 @@ public class DriveTrainSubsystem2 extends SubsystemBase {
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(m_gyro.getAngle()))
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
+
+
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DrivetrainConstants.kMaxSpeedMetersPerSecond);
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
@@ -375,7 +367,7 @@ public class DriveTrainSubsystem2 extends SubsystemBase {
 
     double correctiveTheta = thetaShortened * sign;  // Figure out which way to turn
     double correctiveTurn = -this.m_smoothSteerController.calculate(correctiveTheta);
-    if (Math.abs(xRotation) < OIConstants.kcontrollerDeadband && Math.abs(yRotation) < OIConstants.kcontrollerDeadband) correctiveTurn = 0;
+    if (Math.abs(xRotation) < OIConstants.kControllerDeadband && Math.abs(yRotation) < OIConstants.kControllerDeadband) correctiveTurn = 0;
 
     // Send the drive speed to the main drive method
     this.drive(throttle, strafe, xRotation, correctiveTurn, fieldRelative);

@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.GripperConstants;
 
 public class GripperSubsystem extends SubsystemBase {
+
   // Initialize compressor.
   private final Compressor m_comp;
   private final DoubleSolenoid m_valve;

@@ -42,7 +42,7 @@ public class RobotContainer {
   private final ControlledHeadingDriveCommand2 m_controlledHeadingDriveCommand2;
   private final DefaultDriveCommand2 m_defaultDriveCommand;
   private final FieldSim2 m_fieldSim;
-  private final GripperSubsystem m_gripperSubsytem;
+  private final GripperSubsystem m_gripperSubsystem;
   private final XboxController m_armController;
 
   private final JoystickButton m_armCompEnableButton;
@@ -59,12 +59,14 @@ public class RobotContainer {
 
   public RobotContainer() {
     this.m_DriveTrainSubsystem2 = new DriveTrainSubsystem2();
+    this.m_gripperSubsystem = new GripperSubsystem();
     this.m_driveController = new XboxController(OIConstants.kDriveControllerPort);
+    this.m_armController = new XboxController(OIConstants.kArmControllerPort);
     this.m_controlledHeadingDriveCommand2 = new ControlledHeadingDriveCommand2(this.m_driveController, this.m_DriveTrainSubsystem2);
     this.m_defaultDriveCommand = new DefaultDriveCommand2(this.m_driveController, this.m_DriveTrainSubsystem2);
     this.m_fieldSim = new FieldSim2(this.m_DriveTrainSubsystem2);
-    this.m_armController = new XboxController(OIConstants.kArmControllerPort);
-    this.m_gripperSubsytem = new GripperSubsystem();
+    
+
     
     this.m_armCompEnableButton = new JoystickButton(this.m_armController, XboxController.Button.kA.value);
     this.m_armCompDisableButton = new JoystickButton(this.m_armController, XboxController.Button.kB.value);
@@ -80,8 +82,8 @@ public class RobotContainer {
 
     configureBindings();
 
-    // HOW DOES ROBOT DRIVE HERE
-    
+
+
     this.m_fieldSim.initSim();
     // this.m_drivetrainSubsystem.setDefaultCommand(this.m_defaultDriveCommand);
     this.m_DriveTrainSubsystem2.setDefaultCommand(this.m_defaultDriveCommand);
@@ -89,10 +91,10 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-  this.m_armCompEnableButton.onTrue(new RunCommand(this.m_gripperSubsytem::compEnable, this.m_gripperSubsytem));
-  this.m_armCompDisableButton.onTrue(new RunCommand(this.m_gripperSubsytem::compDisable, this.m_gripperSubsytem));
-  this.m_armOpenGripperButton.onTrue(new RunCommand(this.m_gripperSubsytem::open, this.m_gripperSubsytem));
-  this.m_armCloseGripperButton.onTrue(new RunCommand(this.m_gripperSubsytem::close, this.m_gripperSubsytem));
+  this.m_armCompEnableButton.onTrue(new RunCommand(this.m_gripperSubsystem::compEnable, this.m_gripperSubsystem));
+  this.m_armCompDisableButton.onTrue(new RunCommand(this.m_gripperSubsystem::compDisable, this.m_gripperSubsystem));
+  this.m_armOpenGripperButton.onTrue(new RunCommand(this.m_gripperSubsystem::open, this.m_gripperSubsystem));
+  this.m_armCloseGripperButton.onTrue(new RunCommand(this.m_gripperSubsystem::close, this.m_gripperSubsystem));
   }
 
 
