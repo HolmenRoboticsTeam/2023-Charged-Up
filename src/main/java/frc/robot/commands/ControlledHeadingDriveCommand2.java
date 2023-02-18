@@ -30,10 +30,10 @@ public class ControlledHeadingDriveCommand2 extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double throttle = MathUtil.applyDeadband(-this.m_controller.getLeftY(), OIConstants.kcontrollerDeadband);
-    double strafe  = MathUtil.applyDeadband(-this.m_controller.getLeftX(), OIConstants.kcontrollerDeadband);
-    double xRotation =  MathUtil.applyDeadband(this.m_controller.getRightX(), OIConstants.kcontrollerDeadband);
-    double yRotation =  MathUtil.applyDeadband(-this.m_controller.getRightY(), OIConstants.kcontrollerDeadband);
+    double throttle = MathUtil.applyDeadband(-this.m_controller.getLeftY(), OIConstants.kControllerDeadband);
+    double strafe  = MathUtil.applyDeadband(-this.m_controller.getLeftX(), OIConstants.kControllerDeadband);
+    double xRotation =  MathUtil.applyDeadband(this.m_controller.getRightX(), OIConstants.kControllerDeadband);
+    double yRotation =  MathUtil.applyDeadband(-this.m_controller.getRightY(), OIConstants.kControllerDeadband);
 
     this.m_drivetrainSubsystem.drive(throttle, strafe, xRotation, yRotation, true);
   }

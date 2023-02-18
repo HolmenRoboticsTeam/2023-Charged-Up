@@ -32,9 +32,9 @@ public class DefaultDriveCommand2 extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double throttle = MathUtil.applyDeadband(-this.m_controller.getLeftY(), OIConstants.kcontrollerDeadband);
-    double strafe = MathUtil.applyDeadband(-this.m_controller.getLeftX(), OIConstants.kcontrollerDeadband);
-    double rotation =  MathUtil.applyDeadband(this.m_controller.getRightX(), OIConstants.kcontrollerDeadband);
+    double throttle = MathUtil.applyDeadband(-this.m_controller.getLeftY(), OIConstants.kControllerDeadband);
+    double strafe = MathUtil.applyDeadband(-this.m_controller.getLeftX(), OIConstants.kControllerDeadband);
+    double rotation =  MathUtil.applyDeadband(this.m_controller.getRightX(), OIConstants.kControllerDeadband);
     this.m_drivetrainSubsystem.drive(throttle, strafe, rotation, true, true);
   }
 

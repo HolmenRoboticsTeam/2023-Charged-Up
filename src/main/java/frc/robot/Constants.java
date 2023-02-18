@@ -131,8 +131,32 @@ public final class Constants {
 
   }
 
-  public static class OIConstants {
-    public static final double kcontrollerDeadband = 0.12;
-    public static final int kdriveControllerPort = 0;
+  public static final class ArmConstants {
+    public static final double kMaxPivotArmSpeed = 0;
+    public static final double kMaxExtendArmSpeed = 0;
+    public static final double kMaxRetractArmSpeed = 0;
+    
+    public static final double kMaxArmAngle = 0;
+    public static final double kMinArmAngle = 0;
+
+    public static final double kMaxArmExtension = 0;
+    public static final double kMinArmExtension = 0;
+
+    public static final int kPivotPort = 113;
+    public static final int kExtendPort = 795;
+
+    // Encoders
+  }
+
+  public static final class GripperConstants {
+    public static final int kForwardChannel = 1;
+    public static final int kReverseChannel = 2;
+  }
+  public static final class OIConstants {
+    public static final double kControllerDeadband = 0.12;
+    public static final int kDriveControllerPort = 0;
+    public static final int kArmControllerPort = 976;
+
+
   }
 }
