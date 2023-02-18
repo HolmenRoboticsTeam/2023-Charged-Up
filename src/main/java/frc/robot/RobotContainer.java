@@ -22,33 +22,52 @@ import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveModuleConstants;
-import frc.robot.commands.ControlledHeadingDriveCommand;
-import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.simulation.FieldSim;
-import frc.robot.subsystems.DrivetrainSubsystem;
+// import frc.robot.commands.ControlledHeadingDriveCommand; // Original
+import frc.robot.commands.ControlledHeadingDriveCommand2;
+import frc.robot.commands.DefaultDriveCommand2;
+// import frc.robot.commands.DefaultDriveCommand; // Original
+// import frc.robot.simulation.FieldSim; // Original
+import frc.robot.simulation.FieldSim2;
+// import frc.robot.subsystems.DrivetrainSubsystem; // Original
+import frc.robot.subsystems.DriveTrainSubsystem2;
 
 
 public class RobotContainer {
-  private final DrivetrainSubsystem m_drivetrainSubsystem;
+  private final DriveTrainSubsystem2 m_DriveTrainSubsystem2;
   private final XboxController m_driveController;
-  private final ControlledHeadingDriveCommand m_controlledHeadingDriveCommand;
-  private final DefaultDriveCommand m_defaultDriveCommand;
-  private final FieldSim m_fieldSim;
+  private final ControlledHeadingDriveCommand2 m_controlledHeadingDriveCommand2;
+  private final DefaultDriveCommand2 m_defaultDriveCommand;
+  private final FieldSim2 m_fieldSim;
 
-
-
-
+// Original 
+  // private final DrivetrainSubsystem m_drivetrainSubsystem;
+  // private final XboxController m_driveController;
+  // private final ControlledHeadingDriveCommand m_controlledHeadingDriveCommand;
+  // private final DefaultDriveCommand m_defaultDriveCommand;
+  // private final FieldSim m_fieldSim;
 
   public RobotContainer() {
-    this.m_drivetrainSubsystem = new DrivetrainSubsystem();
+    this.m_DriveTrainSubsystem2 = new DriveTrainSubsystem2();
     this.m_driveController = new XboxController(OIConstants.kdriveControllerPort);
-    this.m_controlledHeadingDriveCommand = new ControlledHeadingDriveCommand(this.m_driveController, this.m_drivetrainSubsystem);
-    this.m_defaultDriveCommand = new DefaultDriveCommand(this.m_driveController, this.m_drivetrainSubsystem);
-    this.m_fieldSim = new FieldSim(this.m_drivetrainSubsystem);
+    this.m_controlledHeadingDriveCommand2 = new ControlledHeadingDriveCommand2(this.m_driveController, this.m_DriveTrainSubsystem2);
+    this.m_defaultDriveCommand = new DefaultDriveCommand2(this.m_driveController, this.m_DriveTrainSubsystem2);
+    this.m_fieldSim = new FieldSim2(this.m_DriveTrainSubsystem2);
+
+  // Original
+    // this.m_drivetrainSubsystem = new DrivetrainSubsystem();
+    // this.m_driveController = new XboxController(OIConstants.kdriveControllerPort);
+    // this.m_controlledHeadingDriveCommand = new ControlledHeadingDriveCommand(this.m_driveController, this.m_drivetrainSubsystem);
+    // this.m_defaultDriveCommand = new DefaultDriveCommand(this.m_driveController, this.m_drivetrainSubsystem);
+    // this.m_fieldSim = new FieldSim(this.m_drivetrainSubsystem);
 
     configureBindings();
+
+    // HOW DOES ROBOT DRIVE HERE
+    
     this.m_fieldSim.initSim();
-    this.m_drivetrainSubsystem.setDefaultCommand(this.m_defaultDriveCommand);
+    // this.m_drivetrainSubsystem.setDefaultCommand(this.m_defaultDriveCommand);
+    this.m_DriveTrainSubsystem2.setDefaultCommand(this.m_defaultDriveCommand);
+
   }
 
   private void configureBindings() {}
@@ -58,18 +77,32 @@ public class RobotContainer {
 
     //Creates the autobuilder. Only needs to be done once.
     SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-      this.m_drivetrainSubsystem::getPose,             // Pose2d supplier
-      this.m_drivetrainSubsystem::setPose,             // Pose2d consumer, used to reset odometry at the beginning of auto
+      this.m_DriveTrainSubsystem2::getPose,             // Pose2d supplier
+      this.m_DriveTrainSubsystem2::setPose,             // Pose2d consumer, used to reset odometry at the beginning of auto
       DrivetrainConstants.kDriveKinematics,            // SwerveDriveKinematics ***UNDEFINED AT THE MOMENT 1/30/2023***
       AutonomousConstants.kPIDTranslationAuto,         // PID constants to correct for translation error (used to create the X and Y PID controllers)
       AutonomousConstants.kPIDRotationAuto,            // PID constants to correct for rotation error (used to create the rotation controller)
-      this.m_drivetrainSubsystem::setModuleStates,     // Module states consumer used to output to the drive subsystem
+      this.m_DriveTrainSubsystem2::setModuleStates,     // Module states consumer used to output to the drive subsystem
       eventMap,
       true,                          // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-      this.m_drivetrainSubsystem);                     // The drive subsystem. Used to properly set the requirements of path following commands
+      this.m_DriveTrainSubsystem2);                     // The drive subsystem. Used to properly set the requirements of path following commands
 
       return autoBuilder.fullAuto(pathGroup);
   }
+// Original
+  //   SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+  //     this.m_drivetrainSubsystem::getPose,             // Pose2d supplier
+  //     this.m_drivetrainSubsystem::setPose,             // Pose2d consumer, used to reset odometry at the beginning of auto
+  //     DrivetrainConstants.kDriveKinematics,            // SwerveDriveKinematics ***UNDEFINED AT THE MOMENT 1/30/2023***
+  //     AutonomousConstants.kPIDTranslationAuto,         // PID constants to correct for translation error (used to create the X and Y PID controllers)
+  //     AutonomousConstants.kPIDRotationAuto,            // PID constants to correct for rotation error (used to create the rotation controller)
+  //     this.m_drivetrainSubsystem::setModuleStates,     // Module states consumer used to output to the drive subsystem
+  //     eventMap,
+  //     true,                          // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+  //     this.m_drivetrainSubsystem);                     // The drive subsystem. Used to properly set the requirements of path following commands
+
+  //     return autoBuilder.fullAuto(pathGroup);
+  // }
 
   public Command getAutonomousCommand() {
 
@@ -121,6 +154,5 @@ public class RobotContainer {
   public void simulationPeriodic() {
     REVPhysicsSim.getInstance().run();
   }
-  
-  
+
 }

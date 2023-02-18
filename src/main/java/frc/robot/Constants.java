@@ -39,16 +39,23 @@ public final class Constants {
     public static final double kMaxAngularSpeedSquared = 2.0 * Math.PI;  // radians per second
     public static final double kSwerveTargetingOffset = 630.0;  // degrees
 
-    // Spark MAX CAN IDs
-    public static final int kFrontLeftDriveCANID = 1;
-    public static final int kFrontRightDriveCANID = 3;
-    public static final int kBackLeftDriveCANID = 5;
-    public static final int kBackRightDriveCANID = 7;
+    // Slew rate constants
+    public static final double kDirectionSlewRate = 1.2; // radians per second
+    public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
+    public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%)
 
-    public static final int kFrontLeftSteeringCANID = 2;
-    public static final int kFrontRightSteeringCANID = 4;
-    public static final int kBackLeftSteeringCANID = 6;
-    public static final int kBackRightSteeringCANID = 8;
+    // Spark MAX CAN IDs
+    public static final int kFrontLeftDriveCANID = 5;
+    public static final int kFrontRightDriveCANID = 7;
+    public static final int kBackLeftDriveCANID = 1;
+    public static final int kBackRightDriveCANID = 3;
+
+    public static final int kFrontLeftSteeringCANID = 6;
+    public static final int kFrontRightSteeringCANID = 8;
+    public static final int kBackLeftSteeringCANID = 2;
+    public static final int kBackRightSteeringCANID = 4;
+
+    public static final boolean kGyroReversed = false;
 
     // Module Angular Offsets - Relative to the chassis in radians
     public static final double kFrontLeftChassisAngularOffsetRadians = -Math.PI / 2.0;
@@ -128,6 +135,4 @@ public final class Constants {
     public static final double kcontrollerDeadband = 0.12;
     public static final int kdriveControllerPort = 0;
   }
-
-
 }
