@@ -4,12 +4,18 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.auto.PIDConstants;
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -24,11 +30,110 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+  public static final class AutonomousConstants {
+    public static final double kMaxVelocity = 2.0;                   //max velocity in 4 m/s
+    public static final double kMaxAcceleration = 3.0;               //max acceleration in 3 m/s^2
+
+    public static final HashMap<String, Command> eventMap = new HashMap<>();
+
+    public static final PIDConstants kPIDTranslationAuto = new PIDConstants(5.0, 0.0, 0.0);
+    public static final PIDConstants kPIDRotationAuto = new PIDConstants(0.5, 0.0, 0.0);
+
+    public static final PathConstraints kPathConstraintsAuto = new PathConstraints(kMaxVelocity, kMaxAcceleration);
+  }
+
+  public static final class ArmConstants {
+    // Motor Driving Parameters
+    public static final double kMaxSpeedMetersPerSecond = 4.8;
+    public static final double kMaxAngularSpeed = 2.0 * Math.PI; // radians per second
+
+    public static final double kDirectionSlewRate = 1.2; // radians per second
+    public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
+    public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%)
+
+    // SPARK MAX CAN IDs
+    public static final int kExtendCanId = 10;
+    public static final int kPivotCanId = 11;
+
+    // Calculations required for extension motor conversion factors and feed forward
+    // Drum diameter is averaged between fully contracted and fully extended wraps of the rope
+    public static final double kExtendMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
+    public static final double kPivotMotorFreeSpeedRps = Neo550MotorConstants.kFreeSpeedRpm / 60;
+    public static final double kDrumDiameterMeters = 0.0259; // Units.inchesToMeters(1.02);
+    public static final double kDrumCircumferenceMeters = kDrumDiameterMeters * Math.PI;
+    // Setting up motor reductions for extention and pivot. Using FreeSpeedRPS to calculate FF for the pivot motor.
+    public static final double kExtendMotorReduction = 36.0 / 1.0;
+    public static final double kPivotMotorReduction = (46.0 / 20.0) * 100.0;
+    public static final double kPivotArmFreeSpeedRps = (kPivotMotorFreeSpeedRps * kDrumCircumferenceMeters)
+        / kPivotMotorReduction;
+    // Encoder is on the output shaft
+    public static final double kDrumMotorReduction = 1.0;
+
+    public static final double kExtendEncoderPositionFactor = kDrumCircumferenceMeters / kDrumMotorReduction;  // Meters
+    public static final double kFullyContractedLengthMeters = 1.035;  // Middle of drum to tip of gripper (rope length); Units.inchesToMeters(40.75);
+    public static final double kGripperTipToMiddleOffsetMeters = 0.083;  // Units.inchesToMeters(3.25);
+
+    // Encoder is on the output shaft
+    public static final double kPivotEncoderPositionFactor = 2.0 * Math.PI;  // Radians
+
+    public static final Rotation2d kPivotForwardLimit = Rotation2d.fromDegrees(100);
+    public static final Rotation2d kPivotReverseLimit = Rotation2d.fromDegrees(-10);
+
+    public static final double kPivotEncoderPositionPIDMinInput = 0;  // Radians
+    public static final double kPivotEncoderPositionPIDMaxInput = kPivotEncoderPositionFactor;  // Radians
+
+    public static final double kExtendP = 0.04;
+    public static final double kExtendI = 0;
+    public static final double kExtendD = 0;
+    public static final double kExtendFF = 1 / kExtendMotorFreeSpeedRps;
+    public static final double kExtendMinOutput = -1;
+    public static final double kExtendMaxOutput = 1;
+
+    public static final double kPivotP = 1.0;
+    public static final double kPivotI = 0;
+    public static final double kPivotD = 0;
+    public static final double kPivotFF = 1 / kPivotMotorFreeSpeedRps;
+    public static final double kPivotMinOutput = -1;
+    public static final double kPivotMaxOutput = 1;
+
+
+    public static final IdleMode kExtendMotorIdleMode = IdleMode.kBrake;
+    public static final IdleMode kPivotMotorIdleMode = IdleMode.kCoast;
+
+    public static final int kExtendMotorCurrentLimit = 20;
+    public static final int kPivotMotorCurrentLimit = 20;
+
+    public static final double kMaxHorizontalDistanceOffRobot = 59.5;  // Units.inchesToMeters(59.5)
+    public static final double kMinHorizontalDistanceOffRobot = 0.0;
+  }
+// Angle and length of arm depending on button pressed. These are not the correct values 
+
+  public static final class ArmPositionConstants {
+  public static final double kHomeAngle = Units.degreesToRadians(25);
+  public static final double kPickUpFromFloorAngle = Units.degreesToRadians(40);
+  public static final double kPickUpFromDriverStationAngle = Units.degreesToRadians(100);
+  public static final double kPlaceOnFloorAngle = Units.degreesToRadians(40);
+  public static final double kPlaceCubeOnLevel1Angle = Units.degreesToRadians(50);
+  public static final double kPlaceCubeOnLevel2Angle = Units.degreesToRadians(100);
+  public static final double kPlaceConeOnLevel1Angle = Units.degreesToRadians(60);
+  public static final double kPlaceConeOnLevel2Angle = Units.degreesToRadians(110);
+
+  public static final double kHomeBoomLength = 0;
+  public static final double kPickUpFromFloorBoomLength = 0;
+  public static final double kPickUpFromDriverStationBoomLength = 0;
+  public static final double kPlaceOnFloorBoomLength = 0;
+  public static final double kPlaceCubeOnLevel1BoomLength = 0;
+  public static final double kPlaceCubeOnLevel2BoomLength = 1;
+  public static final double kPlaceConeOnLevel1BoomLength = 0;
+  public static final double kPlaceConeOnLevel2BoomLength = 1;
+  }
+
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
     public static final double kMaxSpeedMetersPerSecond = 4.8;
-    public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
+    public static final double kMaxAngularSpeed = 2.0 * Math.PI; // radians per second
 
     public static final double kDirectionSlewRate = 1.2; // radians per second
     public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
@@ -52,15 +157,15 @@ public final class Constants {
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
     // SPARK MAX CAN IDs
-    public static final int kFrontLeftDrivingCanId = 11;
-    public static final int kRearLeftDrivingCanId = 13;
-    public static final int kFrontRightDrivingCanId = 15;
-    public static final int kRearRightDrivingCanId = 17;
+    public static final int kFrontLeftDrivingCanId = 5;
+    public static final int kRearLeftDrivingCanId = 1;
+    public static final int kFrontRightDrivingCanId = 7;
+    public static final int kRearRightDrivingCanId = 3;
 
-    public static final int kFrontLeftTurningCanId = 10;
-    public static final int kRearLeftTurningCanId = 12;
-    public static final int kFrontRightTurningCanId = 14;
-    public static final int kRearRightTurningCanId = 16;
+    public static final int kFrontLeftTurningCanId = 6;
+    public static final int kRearLeftTurningCanId = 2;
+    public static final int kFrontRightTurningCanId = 8;
+    public static final int kRearRightTurningCanId = 4;
 
     public static final boolean kGyroReversed = false;
   }
@@ -69,7 +174,7 @@ public final class Constants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T, 13T, or 14T.
     // This changes the drive speed of the module (a pinion gear with more teeth will result in a
     // robot that drives faster).
-    public static final int kDrivingMotorPinionTeeth = 14;
+    public static final int kDrivingMotorPinionTeeth = 13;
 
     // Invert the turning encoder, since the output shaft rotates in the opposite direction of
     // the steering motor in the MAXSwerve Module.
@@ -77,7 +182,7 @@ public final class Constants {
 
     // Calculations required for driving motor conversion factors and feed forward
     public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
-    public static final double kWheelDiameterMeters = 0.0762;
+    public static final double kWheelDiameterMeters = 0.0762;  // Units.inchesToMeters(3);
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
     // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion
     public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
@@ -118,7 +223,9 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kAuxillaryControllerPort = 1;
     public static final double kDriveDeadband = 0.05;
+    public static final int kDriverJoystickPort = 1;
   }
 
   public static final class AutoConstants {
@@ -138,5 +245,18 @@ public final class Constants {
 
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
+  }
+
+  public static final class Neo550MotorConstants {
+    public static final double kFreeSpeedRpm = 11710;
+  }
+
+  // public static final class Neo550MotorConstants {
+  //   public static final double kFreeSpeedRpm = 11710;
+  // }
+
+  public static final class GripperConstants {
+    public static final int kForwardChannel = 1;
+    public static final int kReverseChannel = 2;
   }
 }
