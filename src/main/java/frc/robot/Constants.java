@@ -32,8 +32,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 public final class Constants {
 
   public static final class AutonomousConstants {
-    public static final double kMaxVelocity = 2.0;                   //max velocity in 4 m/s
-    public static final double kMaxAcceleration = 3.0;               //max acceleration in 3 m/s^2
+    public static final double kMaxVelocity = 1.0;                   //max velocity in 4 m/s
+    public static final double kMaxAcceleration = 1.0;               //max acceleration in 3 m/s^2
 
     public static final HashMap<String, Command> eventMap = new HashMap<>();
 
@@ -63,25 +63,27 @@ public final class Constants {
     public static final double kDrumDiameterMeters = 0.0259; // Units.inchesToMeters(1.02);
     public static final double kDrumCircumferenceMeters = kDrumDiameterMeters * Math.PI;
     // Setting up motor reductions for extention and pivot. Using FreeSpeedRPS to calculate FF for the pivot motor.
-    public static final double kExtendMotorReduction = 36.0 / 1.0;
+    public static final double kExtendMotorReduction = 1.0;
     public static final double kPivotMotorReduction = (46.0 / 20.0) * 100.0;
     public static final double kPivotArmFreeSpeedRps = (kPivotMotorFreeSpeedRps * kDrumCircumferenceMeters)
         / kPivotMotorReduction;
-    // Encoder is on the output shaft
-    public static final double kDrumMotorReduction = 1.0;
 
-    public static final double kExtendEncoderPositionFactor = kDrumCircumferenceMeters / kDrumMotorReduction;  // Meters
+    public static final double kExtendEncoderCPR = 8192.0;
+    public static final double kExtendEncoderPositionFactor = kDrumCircumferenceMeters / kExtendEncoderCPR; // Meters
     public static final double kFullyContractedLengthMeters = 1.035;  // Middle of drum to tip of gripper (rope length); Units.inchesToMeters(40.75);
     public static final double kGripperTipToMiddleOffsetMeters = 0.083;  // Units.inchesToMeters(3.25);
 
     // Encoder is on the output shaft
-    public static final double kPivotEncoderPositionFactor = 2.0 * Math.PI;  // Radians
+    public static final double kPivotEncoderPositionFactor = 360;
+    public static final double kPivotEncoderVelocityFactor = kPivotEncoderPositionFactor / 60.0;
 
     public static final Rotation2d kPivotForwardLimit = Rotation2d.fromDegrees(100);
     public static final Rotation2d kPivotReverseLimit = Rotation2d.fromDegrees(-10);
 
     public static final double kPivotEncoderPositionPIDMinInput = 0;  // Radians
     public static final double kPivotEncoderPositionPIDMaxInput = kPivotEncoderPositionFactor;  // Radians
+
+    public static final double kPivotRampRateInSeconds = 3.0;
 
     public static final double kExtendP = 0.04;
     public static final double kExtendI = 0;
@@ -90,38 +92,44 @@ public final class Constants {
     public static final double kExtendMinOutput = -1;
     public static final double kExtendMaxOutput = 1;
 
-    public static final double kPivotP = 1.0;
-    public static final double kPivotI = 0;
+    public static final double kPivotP = 5e-5;
+    public static final double kPivotI = 0.0; //1e-6;
     public static final double kPivotD = 0;
-    public static final double kPivotFF = 1 / kPivotMotorFreeSpeedRps;
+    public static final double kPivotFF = 0.000156;
     public static final double kPivotMinOutput = -1;
     public static final double kPivotMaxOutput = 1;
-
+    public static final double kPivotMaxVel = 15.0; // rpm
+    public static final double kPivotMaxAcc = 100.0;
+    public static final double kPivotMinVel = 0;
+    public static final double kPivotAllowedError = 0;
 
     public static final IdleMode kExtendMotorIdleMode = IdleMode.kBrake;
-    public static final IdleMode kPivotMotorIdleMode = IdleMode.kCoast;
+    public static final IdleMode kPivotMotorIdleMode = IdleMode.kBrake;
 
     public static final int kExtendMotorCurrentLimit = 20;
     public static final int kPivotMotorCurrentLimit = 20;
 
     public static final double kMaxHorizontalDistanceOffRobot = 59.5;  // Units.inchesToMeters(59.5)
     public static final double kMinHorizontalDistanceOffRobot = 0.0;
+
+    public static final boolean kExtendEncoderInverted = false;
+
   }
-// Angle and length of arm depending on button pressed. These are not the correct values 
+// Angle and length of arm depending on button pressed. These are not the correct values
 
   public static final class ArmPositionConstants {
-  public static final double kHomeAngle = Units.degreesToRadians(25);
-  public static final double kPickUpFromFloorAngle = Units.degreesToRadians(40);
-  public static final double kPickUpFromDriverStationAngle = Units.degreesToRadians(100);
+  public static final double kHomeAngle = 10;//Units.degreesToRadians(0);
+  public static final double kPickUpFromFloorAngle = Units.degreesToRadians(5);
+  public static final double kPickUpFromDriverStationAngle = 45; //.degreesToRadians(90);
   public static final double kPlaceOnFloorAngle = Units.degreesToRadians(40);
-  public static final double kPlaceCubeOnLevel1Angle = Units.degreesToRadians(50);
-  public static final double kPlaceCubeOnLevel2Angle = Units.degreesToRadians(100);
-  public static final double kPlaceConeOnLevel1Angle = Units.degreesToRadians(60);
-  public static final double kPlaceConeOnLevel2Angle = Units.degreesToRadians(110);
+  public static final double kPlaceCubeOnLevel1Angle = Units.degreesToRadians(90);
+  public static final double kPlaceCubeOnLevel2Angle = Units.degreesToRadians(90);
+  public static final double kPlaceConeOnLevel1Angle = Units.degreesToRadians(90);
+  public static final double kPlaceConeOnLevel2Angle = Units.degreesToRadians(90);
 
-  public static final double kHomeBoomLength = 0;
-  public static final double kPickUpFromFloorBoomLength = 0;
-  public static final double kPickUpFromDriverStationBoomLength = 0;
+  public static final double kHomeBoomLength = 1.0;
+  public static final double kPickUpFromFloorBoomLength = 1.1;
+  public static final double kPickUpFromDriverStationBoomLength = 3.0;
   public static final double kPlaceOnFloorBoomLength = 0;
   public static final double kPlaceCubeOnLevel1BoomLength = 0;
   public static final double kPlaceCubeOnLevel2BoomLength = 1;
@@ -132,17 +140,19 @@ public final class Constants {
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 4.8;
+    public static final double kMaxSpeedMetersPerSecond = 2.4;
     public static final double kMaxAngularSpeed = 2.0 * Math.PI; // radians per second
 
     public static final double kDirectionSlewRate = 1.2; // radians per second
     public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
     public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%)
 
+    public static final double kDriveRampRateInSeconds = 1.0;
+
     // Chassis configuration
-    public static final double kTrackWidth = Units.inchesToMeters(26.5);
+    public static final double kTrackWidth = Units.inchesToMeters(23.0);
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = Units.inchesToMeters(26.5);
+    public static final double kWheelBase = Units.inchesToMeters(23.0);
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
         new Translation2d(kWheelBase / 2, kTrackWidth / 2),
@@ -167,7 +177,7 @@ public final class Constants {
     public static final int kFrontRightTurningCanId = 8;
     public static final int kRearRightTurningCanId = 4;
 
-    public static final boolean kGyroReversed = false;
+    public static final boolean kGyroReversed = true;
   }
 
   public static final class ModuleConstants {
@@ -224,13 +234,13 @@ public final class Constants {
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kAuxillaryControllerPort = 1;
-    public static final double kDriveDeadband = 0.05;
+    public static final double kDriveDeadband = 0.1;
     public static final int kDriverJoystickPort = 1;
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+    public static final double kMaxSpeedMetersPerSecond = 1.5;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 2.5;
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
     public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
 
@@ -251,12 +261,8 @@ public final class Constants {
     public static final double kFreeSpeedRpm = 11710;
   }
 
-  // public static final class Neo550MotorConstants {
-  //   public static final double kFreeSpeedRpm = 11710;
-  // }
-
   public static final class GripperConstants {
-    public static final int kForwardChannel = 1;
-    public static final int kReverseChannel = 2;
+    public static final int kForwardChannel = 0;
+    public static final int kReverseChannel = 1;
   }
 }

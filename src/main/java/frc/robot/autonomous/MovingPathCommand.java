@@ -33,11 +33,11 @@ public class MovingPathCommand extends CommandBase {
     //Creates the autobuilder. Only needs to be done once.
     SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
       this.m_driveSubsystem::getPose,             // Pose2d supplier
-      this.m_driveSubsystem::resetOdometry,             // Pose2d consumer, used to reset odometry at the beginning of auto
+      this.m_driveSubsystem::setPose,             // Pose2d consumer, used to reset odometry at the beginning of auto
       DriveConstants.kDriveKinematics,            // SwerveDriveKinematics ***UNDEFINED AT THE MOMENT 1/30/2023***
       AutonomousConstants.kPIDTranslationAuto,         // PID constants to correct for translation error (used to create the X and Y PID controllers)
       AutonomousConstants.kPIDRotationAuto,            // PID constants to correct for rotation error (used to create the rotation controller)
-      this.m_driveSubsystem::setModuleStates,     // Module states consumer used to output to the drive subsystem
+      this.m_driveSubsystem::setAutoModuleState,     // Module states consumer used to output to the drive subsystem
       eventMap,
       true,                          // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
       this.m_driveSubsystem);                     // The drive subsystem. Used to properly set the requirements of path following commands
