@@ -2,6 +2,15 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+/*
+*        |                                     |                                 |                            |
+*        |                                     |                                 |                            |
+*        |_ _ _ _     _ _ _ _    _ _ _ _   _ _ | _ _       |_ _ _ _    _ _ _ _   |_ _ _ _     _ _ _ _     _ _ | _ _
+*        |        |  |       |  |         |_ _ | _ _|      |          |       |  |       |   |       |   |_ _ | _ _|
+*        |        |  |_ _ _ _|  |_ _ _ _       |           |          |       |  |       |   |       |        |
+*        |        |  |                  |      |           |          |       |  |       |   |       |        |
+*        |_ _ _ _ |  |_ _ _ _    _ _ _ _|      |           |          |_ _ _ _|  |_ _ _ _|   |_ _ _ _|        |
+*/
 package frc.robot;
 
 import java.util.HashMap;
@@ -32,15 +41,19 @@ import edu.wpi.first.wpilibj2.command.Command;
 public final class Constants {
 
   public static final class AutonomousConstants {
-    public static final double kMaxVelocity = 1.0;                   //max velocity in 4 m/s
-    public static final double kMaxAcceleration = 1.0;               //max acceleration in 3 m/s^2
+    public static final double kMaxVelocity = 1.25;                   //max velocity in 4 m/s
+    public static final double kMaxAcceleration = 3.0;               //max acceleration in 3 m/s^2
 
     public static final HashMap<String, Command> eventMap = new HashMap<>();
 
     public static final PIDConstants kPIDTranslationAuto = new PIDConstants(5.0, 0.0, 0.0);
-    public static final PIDConstants kPIDRotationAuto = new PIDConstants(0.5, 0.0, 0.0);
+    public static final PIDConstants kPIDRotationAuto = new PIDConstants(0.0, 0.0, 0.0);
 
     public static final PathConstraints kPathConstraintsAuto = new PathConstraints(kMaxVelocity, kMaxAcceleration);
+    public static final PathConstraints kPathConstraintsAutoFast = new PathConstraints(4.0, 3.0);
+    public static final PathConstraints kPathConstraintsAutoMedium = new PathConstraints(2.4, 3.0);
+    public static final PathConstraints kPathConstraintsAutoSlow = new PathConstraints(1.0, 3.0);
+
   }
 
   public static final class ArmConstants {
@@ -64,7 +77,7 @@ public final class Constants {
     public static final double kDrumCircumferenceMeters = kDrumDiameterMeters * Math.PI;
     // Setting up motor reductions for extention and pivot. Using FreeSpeedRPS to calculate FF for the pivot motor.
     public static final double kExtendMotorReduction = 1.0;
-    public static final double kPivotMotorReduction = (46.0 / 20.0) * 100.0;
+    public static final double kPivotMotorReduction = (46.0 / 25.0) * 100.0;
     public static final double kPivotArmFreeSpeedRps = (kPivotMotorFreeSpeedRps * kDrumCircumferenceMeters)
         / kPivotMotorReduction;
 
@@ -74,7 +87,9 @@ public final class Constants {
     public static final double kGripperTipToMiddleOffsetMeters = 0.083;  // Units.inchesToMeters(3.25);
 
     // Encoder is on the output shaft
-    public static final double kPivotEncoderPositionFactor = 360;
+    public static final double kPivotEncoderPositionFactor = 360.0;
+    public static final double kInternalPivotEncoderPositionFactor = 360.0 / kPivotMotorReduction;
+    public static final double kInternalPivotEncoderVelocityFactor = kInternalPivotEncoderPositionFactor / 60.0;
     public static final double kPivotEncoderVelocityFactor = kPivotEncoderPositionFactor / 60.0;
 
     public static final Rotation2d kPivotForwardLimit = Rotation2d.fromDegrees(100);
@@ -85,21 +100,25 @@ public final class Constants {
 
     public static final double kPivotRampRateInSeconds = 3.0;
 
-    public static final double kExtendP = 0.04;
-    public static final double kExtendI = 0;
+    public static final double kExtendP = 1e-4;
+    public static final double kExtendI = 0.0; //1e-6;
     public static final double kExtendD = 0;
-    public static final double kExtendFF = 1 / kExtendMotorFreeSpeedRps;
+    public static final double kExtendFF = 0.000156;
     public static final double kExtendMinOutput = -1;
     public static final double kExtendMaxOutput = 1;
+    public static final double kExtendMaxVel = 6000.0; // rpm
+    public static final double kExtendMaxAcc = 2000.0;
+    public static final double kExtendMinVel = 0;
+    public static final double kExtendAllowedError = 0;
 
-    public static final double kPivotP = 5e-5;
+    public static final double kPivotP = 1e-4;
     public static final double kPivotI = 0.0; //1e-6;
     public static final double kPivotD = 0;
     public static final double kPivotFF = 0.000156;
     public static final double kPivotMinOutput = -1;
     public static final double kPivotMaxOutput = 1;
-    public static final double kPivotMaxVel = 15.0; // rpm
-    public static final double kPivotMaxAcc = 100.0;
+    public static final double kPivotMaxVel = 4500.0; // rpm
+    public static final double kPivotMaxAcc = 2000.0;
     public static final double kPivotMinVel = 0;
     public static final double kPivotAllowedError = 0;
 
@@ -118,30 +137,33 @@ public final class Constants {
 // Angle and length of arm depending on button pressed. These are not the correct values
 
   public static final class ArmPositionConstants {
-  public static final double kHomeAngle = 10;//Units.degreesToRadians(0);
-  public static final double kPickUpFromFloorAngle = Units.degreesToRadians(5);
-  public static final double kPickUpFromDriverStationAngle = 45; //.degreesToRadians(90);
-  public static final double kPlaceOnFloorAngle = Units.degreesToRadians(40);
-  public static final double kPlaceCubeOnLevel1Angle = Units.degreesToRadians(90);
-  public static final double kPlaceCubeOnLevel2Angle = Units.degreesToRadians(90);
-  public static final double kPlaceConeOnLevel1Angle = Units.degreesToRadians(90);
-  public static final double kPlaceConeOnLevel2Angle = Units.degreesToRadians(90);
+  public static final double kHomeAngle = 2;//Units.degreesToRadians(0);
+  public static final double kPickUpFromFloorAngle = 23;
+  public static final double kPickUpFromDriverStationAngle = 90; //.degreesToRadians(90);
+  public static final double kPlaceOnFloorAngle = 40;
+  public static final double kPlaceCubeOnLevel1Angle = 100;
+  public static final double kPlaceCubeOnLevel2Angle = 110;
+  public static final double kPlaceConeOnLevel1Angle = 100;
+  public static final double kPlaceConeOnLevel2Part1Angle = 80;
+  public static final double kPlaceConeOnLevel2Part2Angle = 110;
 
-  public static final double kHomeBoomLength = 1.0;
-  public static final double kPickUpFromFloorBoomLength = 1.1;
-  public static final double kPickUpFromDriverStationBoomLength = 3.0;
+  public static final double kHomeBoomLength = 0.0;
+  public static final double kPickUpFromFloorBoomLength = 140.0;
+  public static final double kPickUpFromDriverStationBoomLength = 20.0;
   public static final double kPlaceOnFloorBoomLength = 0;
-  public static final double kPlaceCubeOnLevel1BoomLength = 0;
-  public static final double kPlaceCubeOnLevel2BoomLength = 1;
-  public static final double kPlaceConeOnLevel1BoomLength = 0;
-  public static final double kPlaceConeOnLevel2BoomLength = 1;
+  public static final double kPlaceCubeOnLevel1BoomLength = 25.0;
+  public static final double kPlaceCubeOnLevel2BoomLength = 0;
+  public static final double kPlaceConeOnLevel1BoomLength = 25.0;
+  public static final double kPlaceConeOnLevel2BoomLength = 210.0;
   }
 
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 2.4;
+    public static final double kMaxSpeedMetersPerSecond = 4.0; // 4.8 IS MAX SPEED
     public static final double kMaxAngularSpeed = 2.0 * Math.PI; // radians per second
+    public static final double kMaxAnguolarSpeedSquared = 2.0 * Math.PI; //radians per secondF
+    public static final double kSwerveTargetingOffset = 630.0; // Degrees
 
     public static final double kDirectionSlewRate = 1.2; // radians per second
     public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
@@ -160,11 +182,19 @@ public final class Constants {
         new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
         new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
+    public static final double kHeadingP = 0.0085;
+    public static final double kHeadingI = 0.0;
+    public static final double kHeadingD = 0.0;
+    public static final TrapezoidProfile.Constraints kHeadingControllerConstraints = new TrapezoidProfile.Constraints(
+      kMaxAngularSpeed, kMaxAnguolarSpeedSquared
+      );
+
     // Angular offsets of the modules relative to the chassis in radians
     public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
     public static final double kFrontRightChassisAngularOffset = 0;
     public static final double kBackLeftChassisAngularOffset = Math.PI;
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
+
 
     // SPARK MAX CAN IDs
     public static final int kFrontLeftDrivingCanId = 5;
@@ -187,7 +217,7 @@ public final class Constants {
     public static final int kDrivingMotorPinionTeeth = 13;
 
     // Invert the turning encoder, since the output shaft rotates in the opposite direction of
-    // the steering motor in the MAXSwerve Module.
+    // the motor in the MAXSwerve Module.
     public static final boolean kTurningEncoderInverted = true;
 
     // Calculations required for driving motor conversion factors and feed forward
@@ -234,13 +264,13 @@ public final class Constants {
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kAuxillaryControllerPort = 1;
-    public static final double kDriveDeadband = 0.1;
+    public static final double kDriveDeadband = 0.15;
     public static final int kDriverJoystickPort = 1;
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 1.5;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 2.5;
+    public static final double kMaxSpeedMetersPerSecond = 4.0;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
     public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
 

@@ -21,11 +21,12 @@ public class GripperSubsystem extends SubsystemBase {
   }
 
   public void open() {
-    this.m_valve.set(Value.kForward);
+    this.m_valve.set(Value.kReverse);
 
   }
+
   public void close() {
-    this.m_valve.set(Value.kReverse);
+    this.m_valve.set(Value.kForward);
   }
 
   @Override

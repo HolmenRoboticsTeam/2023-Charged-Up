@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,12 +15,16 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.OIConstants;
 import frc.utils.SwerveUtils;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -46,6 +51,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   // The gyro sensor
   private final AHRS m_gyro = new AHRS(Port.kUSB1);
+
+  //Motion profiling
+  private final ProfiledPIDController m_smoothSteerController = new ProfiledPIDController(
+    DriveConstants.kHeadingP, DriveConstants.kHeadingI, DriveConstants.kHeadingD, DriveConstants.kHeadingControllerConstraints);
 
   // Slew rate filter variables for controlling lateral acceleration
   private double m_currentRotation = 0.0;
@@ -166,8 +175,6 @@ public class DriveSubsystem extends SubsystemBase {
       xSpeedCommanded = m_currentTranslationMag * Math.cos(m_currentTranslationDir);
       ySpeedCommanded = m_currentTranslationMag * Math.sin(m_currentTranslationDir);
       m_currentRotation = m_rotLimiter.calculate(rot);
-
-
     } else {
       xSpeedCommanded = xSpeed;
       ySpeedCommanded = ySpeed;
@@ -189,6 +196,44 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
+  }
+
+  public void headingDrive(double throttle, double strafe, double desiredAngle, boolean fieldRelative) {
+    double currentAngle = Math.abs(this.m_gyro.getAngle() % 360);
+    if (this.m_gyro.getAngle() < 0) currentAngle = 360 - currentAngle;
+
+    // Calculate theta difference between current and desired
+    desiredAngle = (Units.radiansToDegrees(desiredAngle) + DriveConstants.kSwerveTargetingOffset) % 360;
+
+    // Then calculate the shortest direction to take from current to desired
+    double theta = Math.abs(desiredAngle - currentAngle) % 360;
+    double thetaShortened = theta > 180 ? 360 - theta : theta;
+
+    //Calculate Corrective Action
+    double sign = -1;
+    if (currentAngle - desiredAngle >= 0 && currentAngle - desiredAngle <= 180) {
+      sign = 1;
+    } else if (currentAngle - desiredAngle <= -180 && currentAngle - desiredAngle >= -360) {
+      sign = 1;
+    }
+    double correctiveTheta = thetaShortened * sign; //Figures out which way to turn
+    double correctiveTurn = -this.m_smoothSteerController.calculate(correctiveTheta);
+
+    //Send the drive speed to the main drive method
+    this.drive(throttle, strafe, correctiveTurn, true, true);
+  }
+
+  public void headingDrive(double throttle, double strafe, double xRotation, double yRotation, boolean fieldRelative) {
+    // Calculate theta difference between current and desired
+    double desiredAngle = Math.atan2(yRotation, xRotation);
+
+    if (Math.abs(xRotation) < OIConstants.kDriveDeadband && Math.abs(yRotation) < OIConstants.kDriveDeadband) {
+      this.drive(throttle, strafe, 0.0, true, true);
+      return;
+    };
+
+    //Send the drive speed to the main drive method
+    this.headingDrive(throttle, strafe, desiredAngle, true);
   }
 
   /**
@@ -219,7 +264,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void setAutoModuleState(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(
         desiredStates,
-        AutoConstants.kMaxSpeedMetersPerSecond);
+        DriveConstants.kMaxSpeedMetersPerSecond);
     m_frontLeft.setDesiredState(desiredStates[0]);
     m_frontRight.setDesiredState(desiredStates[1]);
     m_rearLeft.setDesiredState(desiredStates[2]);
@@ -245,7 +290,15 @@ public class DriveSubsystem extends SubsystemBase {
    * @return the robot's heading in degrees, from -180 to 180
    */
   public double getHeading() {
-    return Rotation2d.fromDegrees(this.m_gyro.getAngle()).getDegrees() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+    return this.m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+  }
+
+  public double getPitch() {
+    return this.m_gyro.getPitch();
+  }
+
+  public double getRoll() {
+    return this.m_gyro.getRoll();
   }
 
   /**

@@ -27,6 +27,24 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.autonomous.Load1CrossAutoChargeStationAutoCommand;
+import frc.robot.autonomous.Load1CrossChargeStationCrossAuto1;
+import frc.robot.autonomous.Load2CrossAuto1;
+import frc.robot.autonomous.Nothing;
+import frc.robot.autonomous.testChargeStation;
+import frc.robot.autonomous.Comp1;
+import frc.robot.autonomous.Comp2;
+import frc.robot.autonomous.Comp3;
+import frc.robot.autonomous.Comp4;
+import frc.robot.autonomous.CrossAuto;
+import frc.robot.autonomous.CrossAuto2;
+import frc.robot.autonomous.Load1;
+import frc.robot.autonomous.Load1ChargeStation1;
+import frc.robot.autonomous.Load1CrossAuto1Command;
+import frc.robot.autonomous.Load1CrossAuto2Command;
+import frc.robot.commands.ArmExtendToConeLevel2Command;
+import frc.robot.commands.ArmPivotToHomeCommand;
+import frc.robot.commands.ArmRetractToHomeCommand;
 import frc.robot.commands.ToggleCompressorStateCommand;
 import frc.robot.commands.ToggleGripperStateCommand;
 import frc.robot.subsystems.ArmSubsystem;
@@ -38,7 +56,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import java.util.HashMap;
@@ -57,17 +77,41 @@ import com.pathplanner.lib.auto.SwerveAutoBuilder;
 public class RobotContainer {
   private final UsbCamera m_cameraTwo = CameraServer.startAutomaticCapture();
   // The robot's subsystems
+  private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   private final CompressorSubsystem m_compressorSubystem = new CompressorSubsystem();
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final GripperSubsystem m_gripperSubsystem = new GripperSubsystem();
   private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem();
 
   // The robot's commands
   private final ToggleGripperStateCommand m_toggleGripperStateCommand = new ToggleGripperStateCommand(m_gripperSubsystem);
   private final ToggleCompressorStateCommand m_toggleCompressorStateCommand = new ToggleCompressorStateCommand(m_compressorSubystem);
+  private final SequentialCommandGroup m_armGoHomeCommand = new SequentialCommandGroup(new ArmRetractToHomeCommand(m_armSubsystem), new ArmPivotToHomeCommand(m_armSubsystem));
+
+  // The robot's autonomous routines
+  private final Load1ChargeStation1 m_load1ChargeStation1 = new Load1ChargeStation1(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
+  private final Load1CrossAuto1Command m_load1CrossAutoCommand = new Load1CrossAuto1Command(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
+  private final Load1CrossAuto2Command m_load1CrossAuto2Command = new Load1CrossAuto2Command(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
+  private final Load1CrossAutoChargeStationAutoCommand m_load1CrossAutoChargeStationAutoCommand = new Load1CrossAutoChargeStationAutoCommand(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
+  // private final Load1CrossChargeStationCrossAuto m_load1CrossChargeStationCrossAuto = new Load1CrossChargeStationCrossAuto(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
+  private final Load1CrossChargeStationCrossAuto1 m_load1CrossChargeStationCrossAuto1 = new Load1CrossChargeStationCrossAuto1(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
+  private final Load2CrossAuto1 m_load2CrossAuto1 = new Load2CrossAuto1(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
+  private final Load1 m_load1 = new Load1(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
+  private final Nothing m_nothing = new Nothing(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
+  private final CrossAuto m_crossAuto = new CrossAuto(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
+  private final CrossAuto2 m_crossAuto2 = new CrossAuto2(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
+
+  private final Comp1 m_comp1 = new Comp1(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
+  private final Comp2 m_comp2 = new Comp2(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
+  private final Comp3 m_comp3 = new Comp3(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
+  private final Comp4 m_comp4 = new Comp4(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
+  private final testChargeStation m_testChargeStation = new testChargeStation(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
+
+
   // The driver's controller
   private final XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   private final Joystick m_Joystick2 = new Joystick(OIConstants.kDriverJoystickPort);
+  private final JoystickButton m_setXButton = new JoystickButton(m_driverController, XboxController.Button.kX.value);
   // private final Joystick m_auxillaryJoystick = new Joystick(OIConstants.kAuxillaryControllerPort);
   private final JoystickButton m_toggleGripperButton = new JoystickButton(m_Joystick2, 12);
   private final JoystickButton m_toggleCompressorButton = new JoystickButton(m_Joystick2, 8);
@@ -79,35 +123,38 @@ public class RobotContainer {
   private final JoystickButton m_placeCubeOnLevel2Button = new JoystickButton(m_Joystick2, 6);
   private final JoystickButton m_placeConeOnLevel1Button = new JoystickButton(m_Joystick2, 7);
   private final JoystickButton m_placeConeOnLevel2Button = new JoystickButton(m_Joystick2, 9);
+  private final JoystickButton m_slowDriveMode = new JoystickButton(m_driverController, 5);
 
-  private final ArmSubsystem m_armSubsystem = new ArmSubsystem(m_Joystick2);
+  SendableChooser<Command> m_autoChooser = new SendableChooser<>();
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Camera settings, self explanatory
-    m_cameraTwo.setResolution(320, 240);
+    m_cameraTwo.setResolution(176, 144);
     m_cameraTwo.setFPS(30);
 
     // Configure the button bindings
     this.configureButtonBindings();
-    this.m_compressorSubystem.disable();
 
     // Configure default commands
-    this.m_robotDrive.setDefaultCommand(
+    this.m_driveSubsystem.setDefaultCommand(
       // The left stick controls translation of the robot.
       // Turning is controlled by the X axis of the right stick.
       new RunCommand(
-        () -> this.m_robotDrive.drive(
-          MathUtil.applyDeadband(this.m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-          MathUtil.applyDeadband(this.m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-          -MathUtil.applyDeadband(this.m_driverController.getRawAxis(4), OIConstants.kDriveDeadband),  // XBOX One controller, Right X-axis is ID 3 -- WPILib getRightX will not work (id 4)
-          true,
+        () -> this.m_driveSubsystem.headingDrive(
+          -MathUtil.applyDeadband(this.m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(this.m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+          MathUtil.applyDeadband(this.m_driverController.getRawAxis(4), OIConstants.kDriveDeadband),
+          MathUtil.applyDeadband(this.m_driverController.getRawAxis(5), OIConstants.kDriveDeadband),
           true
         ),
-        this.m_robotDrive
+        this.m_driveSubsystem
       )
     );
+
+    this.m_armSubsystem.setDefaultCommand(this.m_armGoHomeCommand);
   }
 
   /**
@@ -120,29 +167,26 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(this.m_driverController, Button.kR1.value)
-      .whileTrue(
+    this.m_slowDriveMode.whileTrue(
+        // The left stick controls translation of the robot.
+        // Turning is controlled by the X axis of the right stick.
         new RunCommand(
-          () -> this.m_robotDrive.setX(),
-          this.m_robotDrive
+          () -> this.m_driveSubsystem.headingDrive(
+            -MathUtil.applyDeadband(this.m_driverController.getLeftY(), OIConstants.kDriveDeadband) * 0.25,
+            -MathUtil.applyDeadband(this.m_driverController.getLeftX(), OIConstants.kDriveDeadband) * 0.25,
+            MathUtil.applyDeadband(this.m_driverController.getRawAxis(4), OIConstants.kDriveDeadband) * 0.25,
+            MathUtil.applyDeadband(this.m_driverController.getRawAxis(5), OIConstants.kDriveDeadband) * 0.25,
+            true
+          ),
+          this.m_driveSubsystem
         )
       );
     this.m_toggleGripperButton.toggleOnTrue(this.m_toggleGripperStateCommand);
     this.m_toggleCompressorButton.toggleOnTrue(this.m_toggleCompressorStateCommand);
 
-    this.m_homeButton.onTrue(
-      new RunCommand(
-        () -> this.m_armSubsystem.setDesiredState(
-          new SwerveModulePosition(
-            ArmPositionConstants.kHomeBoomLength,
-            Rotation2d.fromDegrees(ArmPositionConstants.kHomeAngle)
-          )
-        ),
-        this.m_armSubsystem
-      )
-    );
+    this.m_homeButton.onTrue(this.m_armGoHomeCommand);
 
-    this.m_pickUpFromFloorButton.onTrue(
+    this.m_pickUpFromFloorButton.whileTrue(
       new RunCommand(
         () -> this.m_armSubsystem.setDesiredState(
           new SwerveModulePosition(
@@ -154,8 +198,8 @@ public class RobotContainer {
       )
     );
 
-    this.m_pickUpFromDriverStationButton.onTrue(
-      new InstantCommand(
+    this.m_pickUpFromDriverStationButton.whileTrue(
+      new RunCommand(
         () -> this.m_armSubsystem.setDesiredState(
           new SwerveModulePosition(
             ArmPositionConstants.kPickUpFromDriverStationBoomLength,
@@ -166,7 +210,7 @@ public class RobotContainer {
       )
     );
 
-  this.m_placeOnFloorButton.onTrue(
+  this.m_placeOnFloorButton.whileTrue(
       new RunCommand(
         () -> this.m_armSubsystem.setDesiredState(
           new SwerveModulePosition(
@@ -178,7 +222,7 @@ public class RobotContainer {
       )
     );
 
-  this.m_placeCubeOnLevel1Button.onTrue(
+  this.m_placeCubeOnLevel1Button.whileTrue(
       new RunCommand(
         () -> this.m_armSubsystem.setDesiredState(
           new SwerveModulePosition(
@@ -190,7 +234,7 @@ public class RobotContainer {
       )
     );
 
-  this.m_placeCubeOnLevel2Button.onTrue(
+  this.m_placeCubeOnLevel2Button.whileTrue(
       new RunCommand(
         () -> this.m_armSubsystem.setDesiredState(
           new SwerveModulePosition(
@@ -202,7 +246,7 @@ public class RobotContainer {
       )
     );
 
-  this.m_placeConeOnLevel1Button.onTrue(
+  this.m_placeConeOnLevel1Button.whileTrue(
       new RunCommand(
         () -> this.m_armSubsystem.setDesiredState(
           new SwerveModulePosition(
@@ -214,48 +258,43 @@ public class RobotContainer {
       )
     );
 
-  this.m_placeConeOnLevel2Button.onTrue(
+  this.m_placeConeOnLevel2Button.whileTrue(
       new RunCommand(
         () -> this.m_armSubsystem.setDesiredState(
           new SwerveModulePosition(
             ArmPositionConstants.kPlaceConeOnLevel2BoomLength,
-            Rotation2d.fromDegrees(ArmPositionConstants.kPlaceConeOnLevel2Angle)
+            Rotation2d.fromDegrees(ArmPositionConstants.kPlaceConeOnLevel2Part2Angle)
           )
         ),
         this.m_armSubsystem
       )
     );
 
-  }
+    this.m_setXButton.toggleOnTrue(
+      new RunCommand(this.m_driveSubsystem::setX, this.m_driveSubsystem)
+    );
+    m_autoChooser.setDefaultOption("Load 1, Cross Auto 1", this.m_load1CrossAutoCommand);
+    m_autoChooser.addOption("Load 1, cross, and balance", this.m_load1CrossAutoChargeStationAutoCommand);
+    m_autoChooser.addOption("Load 2 Cross Auto 1", this.m_load2CrossAuto1);
+    m_autoChooser.addOption("Load 1 Cross Auto 2", this.m_load1CrossAuto2Command);
+    m_autoChooser.addOption("Load 1 Charge Station 1", this.m_load1ChargeStation1);
+    m_autoChooser.addOption("Load 2 Cross Auto Charge Station 1", this.m_load1CrossChargeStationCrossAuto1);
+    m_autoChooser.addOption("Load1", this.m_load1);
+    m_autoChooser.addOption("Nothing", this.m_nothing);
+    m_autoChooser.addOption("Cross Auto", this.m_crossAuto);
+    m_autoChooser.addOption("Cross Auto 2", this.m_crossAuto2);
 
-  public Command buildSwerveAutoBuilder(List<PathPlannerTrajectory> pathGroup, HashMap<String, Command> eventMap) {
+    m_autoChooser.addOption("Comp-1", m_comp1);
+    m_autoChooser.addOption("Comp-2", m_comp2);
+    m_autoChooser.addOption("Comp-3", m_comp3);
+    m_autoChooser.addOption("Comp-4", m_comp4);
+    m_autoChooser.addOption("testChargeStation", m_testChargeStation);
 
-    //Creates the autobuilder. Only needs to be done once.
-    SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-      this.m_robotDrive::getPose,             // Pose2d supplier
-      this.m_robotDrive::setPose,             // Pose2d consumer, used to reset odometry at the beginning of auto
-      DriveConstants.kDriveKinematics,            // SwerveDriveKinematics ***UNDEFINED AT THE MOMENT 1/30/2023***
-      AutonomousConstants.kPIDTranslationAuto,         // PID constants to correct for translation error (used to create the X and Y PID controllers)
-      AutonomousConstants.kPIDRotationAuto,            // PID constants to correct for rotation error (used to create the rotation controller)
-      this.m_robotDrive::setAutoModuleState,     // Module states consumer used to output to the drive subsystem
-      eventMap,
-      true,                          // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-      this.m_robotDrive);                     // The drive subsystem. Used to properly set the requirements of path following commands
 
-      return autoBuilder.fullAuto(pathGroup);
-  }
+    // m_chooser.addOption("Load 3, cross", blueLoad3CrossAuto());
+    // m_chooser.addOption("Load 2, cross", blueLoad2CrossAuto());
+    SmartDashboard.putData(m_autoChooser);
 
-  public Command blueLoad1CrossAndBalanceAuto() {
-    List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("Blue-Load1-CrossAuto-ChargeStation", AutonomousConstants.kPathConstraintsAuto);
-    HashMap<String, Command> eventMap = new HashMap<>();
-
-    /** Creates a new PathAndEventSubsystem. */
-    eventMap.put("placeCone", new PrintCommand("Passed place cone"));
-    eventMap.put("setNewArmPosition", new PrintCommand("arm is going up"));
-    eventMap.put("setArmGroundPosition", new PrintCommand("arm is going down"));
-    eventMap.put("takeCone", new PrintCommand("Passed take cone"));
-
-    return this.buildSwerveAutoBuilder(pathGroup, eventMap);
   }
 
   /**
@@ -264,13 +303,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-
-    SendableChooser<Command> m_chooser = new SendableChooser<>();
-    m_chooser.setDefaultOption("Load 1, cross, and balance", blueLoad1CrossAndBalanceAuto());
-    // m_chooser.addOption("Load 3, cross", blueLoad3CrossAuto());
-    // m_chooser.addOption("Load 2, cross", blueLoad2CrossAuto());
-    SmartDashboard.putData(m_chooser);
-
-    return m_chooser.getSelected();
+    return m_autoChooser.getSelected();
   }
 }
