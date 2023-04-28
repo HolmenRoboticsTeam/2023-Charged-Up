@@ -106,8 +106,8 @@ public final class Constants {
     public static final double kExtendFF = 0.000156;
     public static final double kExtendMinOutput = -1;
     public static final double kExtendMaxOutput = 1;
-    public static final double kExtendMaxVel = 6000.0; // rpm
-    public static final double kExtendMaxAcc = 2000.0;
+    public static final double kExtendMaxVel = 10000.0; // rpm
+    public static final double kExtendMaxAcc = 3000.0;
     public static final double kExtendMinVel = 0;
     public static final double kExtendAllowedError = 0;
 
@@ -154,7 +154,7 @@ public final class Constants {
   public static final double kPlaceCubeOnLevel1BoomLength = 25.0;
   public static final double kPlaceCubeOnLevel2BoomLength = 0;
   public static final double kPlaceConeOnLevel1BoomLength = 25.0;
-  public static final double kPlaceConeOnLevel2BoomLength = 210.0;
+  public static final double kPlaceConeOnLevel2BoomLength = 230.0;
   }
 
   public static final class DriveConstants {

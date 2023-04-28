@@ -273,22 +273,22 @@ public class RobotContainer {
     this.m_setXButton.toggleOnTrue(
       new RunCommand(this.m_driveSubsystem::setX, this.m_driveSubsystem)
     );
-    m_autoChooser.setDefaultOption("Load 1, Cross Auto 1", this.m_load1CrossAutoCommand);
-    m_autoChooser.addOption("Load 1, cross, and balance", this.m_load1CrossAutoChargeStationAutoCommand);
-    m_autoChooser.addOption("Load 2 Cross Auto 1", this.m_load2CrossAuto1);
-    m_autoChooser.addOption("Load 1 Cross Auto 2", this.m_load1CrossAuto2Command);
-    m_autoChooser.addOption("Load 1 Charge Station 1", this.m_load1ChargeStation1);
-    m_autoChooser.addOption("Load 2 Cross Auto Charge Station 1", this.m_load1CrossChargeStationCrossAuto1);
-    m_autoChooser.addOption("Load1", this.m_load1);
-    m_autoChooser.addOption("Nothing", this.m_nothing);
-    m_autoChooser.addOption("Cross Auto", this.m_crossAuto);
-    m_autoChooser.addOption("Cross Auto 2", this.m_crossAuto2);
+    // m_autoChooser.setDefaultOption("Load 1 Cross Auto 1", this.m_load1CrossAutoCommand);
+    // m_autoChooser.addOption("Load 1, cross, and balance", this.m_load1CrossAutoChargeStationAutoCommand);
+    // m_autoChooser.addOption("Load 2 Cross Auto 1", this.m_load2CrossAuto1);
+    // m_autoChooser.addOption("Load 1 Cross Auto 2", this.m_load1CrossAuto2Command);
+    // m_autoChooser.addOption("Load 1 Charge Station 1", this.m_load1ChargeStation1);
+    // m_autoChooser.addOption("Load 2 Cross Auto Charge Station 1", this.m_load1CrossChargeStationCrossAuto1);
+    // m_autoChooser.addOption("Load1", this.m_load1);
+    // m_autoChooser.addOption("Cross Auto", this.m_crossAuto);
+    // m_autoChooser.addOption("Cross Auto 2", this.m_crossAuto2);
 
+    m_autoChooser.setDefaultOption("Charge Station Only", m_testChargeStation);
     m_autoChooser.addOption("Comp-1", m_comp1);
     m_autoChooser.addOption("Comp-2", m_comp2);
     m_autoChooser.addOption("Comp-3", m_comp3);
     m_autoChooser.addOption("Comp-4", m_comp4);
-    m_autoChooser.addOption("testChargeStation", m_testChargeStation);
+    m_autoChooser.addOption("Nothing", this.m_nothing);
 
 
     // m_chooser.addOption("Load 3, cross", blueLoad3CrossAuto());

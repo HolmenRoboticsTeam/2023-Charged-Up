@@ -61,11 +61,11 @@ public class AutoBalanceCommand extends CommandBase {
 
     if (m_autoBalanceXMode) {
       double pitchAngleRadians = pitchAngleDegrees * (Math.PI / 180.0);
-      xAxisRate = Math.sin(pitchAngleRadians) * -0.45;
+      xAxisRate = Math.sin(pitchAngleRadians) * -0.35;
     }
     if (m_autoBalanceYMode) {
       double rollAngleRadians = rollAngleDegrees * (Math.PI / 180.0);
-      yAxisRate = Math.sin(rollAngleRadians) * -0.45;
+      yAxisRate = Math.sin(rollAngleRadians) * -0.35;
     }
 
     // System.out.println();

@@ -132,6 +132,8 @@ public class ArmSubsystem extends SubsystemBase {
     // this.m_extendAltEncoder.setInverted(ArmConstants.kExtendEncoderInverted);
     this.m_armPivotSparkMax.setOpenLoopRampRate(ArmConstants.kPivotRampRateInSeconds);
 
+    this.m_extendIntEncoder.setPosition(0);
+
     // Save the SPARK MAX configurations. If a SPARK MAX browns out during
     // operation, it will maintain the above configurations.
     this.m_armExtendSparkMax.burnFlash();
@@ -177,7 +179,7 @@ public class ArmSubsystem extends SubsystemBase {
   public void periodic() {
     // Update telemetry
     SmartDashboard.putNumber("Arm Boom Length Meters", this.getBoomLength());
-    SmartDashboard.putNumber("Arm Angle Degrees", this.m_pivotAbsEncoder.getPosition());
+    SmartDashboard.putNumber("Arm Angle Degrees", -this.m_pivotAbsEncoder.getPosition() - 180.0);
     SmartDashboard.putNumber("Arm pivot trapezoid", this.m_pivotInitialState.position);
   }
 }

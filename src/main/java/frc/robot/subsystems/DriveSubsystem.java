@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -51,6 +54,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   // The gyro sensor
   private final AHRS m_gyro = new AHRS(Port.kUSB1);
+  private final ScheduledThreadPoolExecutor m_executor = new ScheduledThreadPoolExecutor(1);
 
   //Motion profiling
   private final ProfiledPIDController m_smoothSteerController = new ProfiledPIDController(
@@ -78,7 +82,11 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
-    zeroHeading();
+    // Delay zeroing the gyro until its calibration is finished
+    this.m_executor.schedule(this::zeroHeading, (long)1.0, TimeUnit.SECONDS);
+
+    // Comment above and uncomment below for old behavior
+    // this.zeroHeading();
   }
 
   @Override
