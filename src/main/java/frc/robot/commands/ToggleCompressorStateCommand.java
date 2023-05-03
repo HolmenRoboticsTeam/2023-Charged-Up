@@ -6,12 +6,13 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.CompressorSubsystem;
+import frc.robot.subsystems.compressor.Compressor;
 
 public class ToggleCompressorStateCommand extends CommandBase {
-  private CompressorSubsystem m_compressorSubsystem;
+  private Compressor m_compressorSubsystem;
 
   /** Creates a new ToggleCompressorStateCommand. */
-  public ToggleCompressorStateCommand(CompressorSubsystem compressorSubsystem) {
+  public ToggleCompressorStateCommand(Compressor compressorSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.addRequirements(compressorSubsystem);
     this.m_compressorSubsystem = compressorSubsystem;

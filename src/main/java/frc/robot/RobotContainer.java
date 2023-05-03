@@ -52,6 +52,8 @@ import frc.robot.subsystems.CompressorSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.GripperSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.compressor.Compressor;
+import frc.robot.subsystems.compressor.CompressorIOReal;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -78,10 +80,11 @@ public class RobotContainer {
   private final UsbCamera m_cameraTwo = CameraServer.startAutomaticCapture();
   // The robot's subsystems
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
-  private final CompressorSubsystem m_compressorSubystem = new CompressorSubsystem();
+  // private final CompressorSubsystem m_compressorSubystem = new CompressorSubsystem();
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final GripperSubsystem m_gripperSubsystem = new GripperSubsystem();
   private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem();
+  private final Compressor m_compressorSubystem = new Compressor(new CompressorIOReal());
 
   // The robot's commands
   private final ToggleGripperStateCommand m_toggleGripperStateCommand = new ToggleGripperStateCommand(m_gripperSubsystem);
@@ -132,8 +135,8 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Camera settings, self explanatory
-    m_cameraTwo.setResolution(176, 144);
-    m_cameraTwo.setFPS(30);
+    // m_cameraTwo.setResolution(176, 144);
+    // m_cameraTwo.setFPS(30);
 
     // Configure the button bindings
     this.configureButtonBindings();
