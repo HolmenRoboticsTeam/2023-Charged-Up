@@ -13,6 +13,7 @@ public interface CompressorIO {
         public boolean compressorIsEnabled = true;
         public boolean compressorIsOn = false;
     }
+
     public default void updateInputs(CompressorIOInputs inputs) {}
     public default void disable() {}
     public default void enable() {}

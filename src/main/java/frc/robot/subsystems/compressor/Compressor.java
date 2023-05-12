@@ -7,7 +7,6 @@ package frc.robot.subsystems.compressor;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.compressor.CompressorIO.CompressorIOInputs;
 
 public class Compressor extends SubsystemBase {
   private CompressorIO io;
@@ -25,6 +24,10 @@ public class Compressor extends SubsystemBase {
   Logger.getInstance().processInputs("Compressor", inputs);
   }
 
-  public void disable() {}
-  public void enable() {}
+  public void disable() {
+    this.io.disable();
+  }
+  public void enable() {
+    this.io.enable();
+  }
 }
