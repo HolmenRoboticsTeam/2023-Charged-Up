@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drive extends SubsystemBase {
   private DriveIO io;
-  // private DriveIOInputsAutoLogged inputs = new DriveIOInputsAutoLogged();
+  private DriveIOInputsAutoLogged inputs = new DriveIOInputsAutoLogged();
   /** Creates a new Drive. */
   public Drive(DriveIO io) {
     this.io = io;
@@ -20,11 +20,11 @@ public class Drive extends SubsystemBase {
   public void periodic() {
 
 
-  // io.updateInputs(inputs);
-  // Logger.getInstance().processInputs(key: "Drive", inputs);
+  io.updateInputs(inputs);
+  Logger.getInstance().processInputs("Drive", inputs);
   }
 
-  public void getHeading() {
-    this.io.getHeading();
+  public double getHeading() {
+    return this.io.getHeading();
   }
 }

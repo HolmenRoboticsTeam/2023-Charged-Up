@@ -7,6 +7,7 @@ package frc.robot.subsystems.arm;
 import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 /** Add your docs here. */
 public interface ArmIO {
@@ -19,9 +20,7 @@ public interface ArmIO {
     public default void updateInputs(ArmIOInputs inputs) {}
     public default Rotation2d getAngle() {return null;}
     public default double getBoomLength() {return 0.0;}
+    public default void setDesiredState(SwerveModulePosition desiredState) {}
     public default void setPivot() {}
     public default void SetBoomLength() {}
     }
-    // public default Rotation2d getAngle() {
-    //     return Rotation2d.fromDegrees(m_pivotIntEncoder.getPosition());
-    // }
