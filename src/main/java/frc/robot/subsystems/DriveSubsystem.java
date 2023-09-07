@@ -80,7 +80,7 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
       });
 
-  /** Creates a new DriveSubsystem. */
+  /** Creates a new Drive. */
   public DriveSubsystem() {
     // Delay zeroing the gyro until its calibration is finished
     this.m_executor.schedule(this::zeroHeading, (long)1.0, TimeUnit.SECONDS);

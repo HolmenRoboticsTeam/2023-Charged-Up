@@ -47,13 +47,19 @@ import frc.robot.commands.ArmPivotToHomeCommand;
 import frc.robot.commands.ArmRetractToHomeCommand;
 import frc.robot.commands.ToggleCompressorStateCommand;
 import frc.robot.commands.ToggleGripperStateCommand;
-import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.CompressorSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.GripperSubsystem;
+import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.compressor.Compressor;
 import frc.robot.subsystems.compressor.CompressorIOReal;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveIOReal;
+import frc.robot.subsystems.gripper.Gripper;
+import frc.robot.subsystems.gripper.GripperIOReal;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -79,10 +85,10 @@ import com.pathplanner.lib.auto.SwerveAutoBuilder;
 public class RobotContainer {
   private final UsbCamera m_cameraTwo = CameraServer.startAutomaticCapture();
   // The robot's subsystems
-  private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
+  private final Arm m_armSubsystem = new Arm(new ArmIOReal());
   // private final CompressorSubsystem m_compressorSubystem = new CompressorSubsystem();
-  private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
-  private final GripperSubsystem m_gripperSubsystem = new GripperSubsystem();
+  private final Drive m_driveSubsystem = new Drive(new DriveIOReal());
+  private final Gripper m_gripperSubsystem = new Gripper(new GripperIOReal());
   private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem();
   private final Compressor m_compressorSubystem = new Compressor(new CompressorIOReal());
 
@@ -109,7 +115,6 @@ public class RobotContainer {
   private final Comp3 m_comp3 = new Comp3(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
   private final Comp4 m_comp4 = new Comp4(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
   private final testChargeStation m_testChargeStation = new testChargeStation(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
-
 
   // The driver's controller
   private final XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);

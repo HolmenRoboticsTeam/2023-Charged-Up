@@ -39,6 +39,8 @@ public class ArmIOReal implements ArmIO {
     private TrapezoidProfile.State m_pivotInitialState;
     private TrapezoidProfile m_profile;
 
+    private Arm m_arm;
+
     public ArmIOReal() {
         this.m_armExtendSparkMax = new CANSparkMax(ArmConstants.kExtendCanId, MotorType.kBrushless);
         this.m_armPivotSparkMax = new CANSparkMax(ArmConstants.kPivotCanId, MotorType.kBrushless);
@@ -135,10 +137,25 @@ public class ArmIOReal implements ArmIO {
         this.m_armPivotSparkMax.burnFlash();
       }
 
+    public void updateInputs(ArmIOInputs inputs) {
+
+      inputs.boomAngle = this.getAngle().getDegrees();
+      inputs.boomLength = this.getBoomLength();
+
+      inputs.pivotMotorTemp = this.m_armPivotSparkMax.getMotorTemperature();
+      inputs.pivotMotorCurrentDraw = this.m_armPivotSparkMax.getBusVoltage();
+      inputs.pivotMotorVelocity = this.m_pivotIntEncoder.getVelocity();
+
+      inputs.extensionMotorTemp = this.m_armExtendSparkMax.getMotorTemperature();
+      inputs.extensionMotorCurrentDraw = this.m_armExtendSparkMax.getBusVoltage();
+      inputs.extensionMotorVelocity = this.m_extendIntEncoder.getVelocity();
+
+    }
+
     public Rotation2d getAngle() {
         return Rotation2d.fromDegrees(m_pivotIntEncoder.getPosition());
       }
-    
+
       /** Get the length of the arm's boom in meters.
        * TODO: Need to test; not reliable.
        *
@@ -147,7 +164,7 @@ public class ArmIOReal implements ArmIO {
       public double getBoomLength() {
         return this.m_extendIntEncoder.getPosition();
       }
-    
+
       /** Set the arm's boom length and pivot angle.
        *
        * @param desiredState the arm's boom length in meters and pivot angle in degrees.
@@ -156,11 +173,11 @@ public class ArmIOReal implements ArmIO {
         this.setPivot(desiredState.angle.getDegrees());
         this.setBoomLength(desiredState.distanceMeters);
       }
-    
+
       public void setPivot(double angleDegrees) {
         this.m_pivotPIDController.setReference(angleDegrees, ControlType.kSmartMotion);
       }
-    
+
       public void setBoomLength(double rotations) {
         this.m_extendPIDController.setReference(rotations, ControlType.kSmartMotion);
       }

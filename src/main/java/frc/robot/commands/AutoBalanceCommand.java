@@ -5,10 +5,10 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.drive.Drive;
 
 public class AutoBalanceCommand extends CommandBase {
-  private final DriveSubsystem m_driveSubsystem;
+  private final Drive m_driveSubsystem;
   private final double kOffBalanceAngleThresholdDegrees;
   private final double kOnBalanceAngleThresholdDegrees;
   private boolean m_autoBalanceXMode;
@@ -16,14 +16,14 @@ public class AutoBalanceCommand extends CommandBase {
 
 
   /** Creates a new AutoBalanceCommand. */
-  public AutoBalanceCommand(DriveSubsystem driveSubsystem) {
-    this.m_driveSubsystem = driveSubsystem;
+  public AutoBalanceCommand(Drive m_driveSubsystem2) {
+    this.m_driveSubsystem = m_driveSubsystem2;
     this.m_autoBalanceXMode = false;
     this.m_autoBalanceYMode = false;
     this.kOffBalanceAngleThresholdDegrees = 10;
     this.kOnBalanceAngleThresholdDegrees = 5;
 
-    this.addRequirements(driveSubsystem);
+    this.addRequirements(m_driveSubsystem2);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 

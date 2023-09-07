@@ -33,4 +33,16 @@ public class Arm extends SubsystemBase {
   public double getBoomLength() {
     return this.io.getBoomLength();
   }
+
+  public void setDesiredState(SwerveModulePosition desiredState) {
+    this.io.setDesiredState(desiredState);
+  }
+
+  public void setPivot(double angleDegrees) {
+    this.io.setPivot(angleDegrees);
+  }
+
+  public void setBoomLength(double rotation) {
+    this.io.setBoomLength(rotation);
+  }
 }

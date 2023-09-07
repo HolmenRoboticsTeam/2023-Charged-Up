@@ -5,13 +5,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.GripperSubsystem;
+import frc.robot.subsystems.gripper.Gripper;
 
 public class ToggleGripperStateCommand extends CommandBase {
-  private final GripperSubsystem m_gripperSubsystem;
+  private final Gripper m_gripperSubsystem;
 
   /** Creates a new ToggleGripperStateCommand. */
-  public ToggleGripperStateCommand(GripperSubsystem gripperSubsystem) {
+  public ToggleGripperStateCommand(Gripper gripperSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.addRequirements(gripperSubsystem);
     this.m_gripperSubsystem = gripperSubsystem;

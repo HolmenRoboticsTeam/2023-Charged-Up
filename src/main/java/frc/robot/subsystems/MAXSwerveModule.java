@@ -17,6 +17,7 @@ import com.revrobotics.RelativeEncoder;
 
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.subsystems.drive.DriveIO.DriveIOInputs;
 
 public class MAXSwerveModule {
   private final CANSparkMax m_drivingSparkMax;
@@ -112,6 +113,15 @@ public class MAXSwerveModule {
     m_chassisAngularOffset = chassisAngularOffset;
     m_desiredState.angle = new Rotation2d(m_turningEncoder.getPosition());
     m_drivingEncoder.setPosition(0);
+  }
+
+  public void updateInputs(DriveIOInputs inputs, int motorID) {
+
+    inputs.driveMotorTemp[motorID] = m_drivingSparkMax.getMotorTemperature();
+    inputs.driveMotorCurrentDraw[motorID] = m_drivingSparkMax.getBusVoltage();
+
+    inputs.turningMotorTemp[motorID] = m_turningSparkMax.getMotorTemperature();
+    inputs.turningMotorCurrentDraw[motorID] = m_turningSparkMax.getBusVoltage();
   }
 
   /**

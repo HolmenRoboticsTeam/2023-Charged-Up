@@ -15,12 +15,21 @@ public interface ArmIO {
     @AutoLog
     public static class ArmIOInputs {
         public double boomLength;
-        public Rotation2d boomAngle;
+        public double boomAngle;
+
+        public double pivotMotorTemp;
+        public double pivotMotorCurrentDraw;
+        public double pivotMotorVelocity;
+
+        public double extensionMotorTemp;
+        public double extensionMotorCurrentDraw;
+        public double extensionMotorVelocity;
     }
+
     public default void updateInputs(ArmIOInputs inputs) {}
     public default Rotation2d getAngle() {return null;}
     public default double getBoomLength() {return 0.0;}
     public default void setDesiredState(SwerveModulePosition desiredState) {}
-    public default void setPivot() {}
-    public default void SetBoomLength() {}
+    public default void setPivot(double angleDegrees) {}
+    public default void setBoomLength(double rotation) {}
     }

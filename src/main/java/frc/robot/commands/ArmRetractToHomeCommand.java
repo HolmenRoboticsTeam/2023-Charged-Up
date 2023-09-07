@@ -6,14 +6,14 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.ArmPositionConstants;
-import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.arm.Arm;
 
 public class ArmRetractToHomeCommand extends CommandBase {
 
-  private final ArmSubsystem m_armSubsystem;
+  private final Arm m_armSubsystem;
 
   /** Creates a new RetractArmToPositionCommand. */
-  public ArmRetractToHomeCommand(ArmSubsystem armSubsystem) {
+  public ArmRetractToHomeCommand(Arm armSubsystem) {
     this.m_armSubsystem = armSubsystem;
     this.addRequirements(armSubsystem);
   }

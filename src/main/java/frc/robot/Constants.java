@@ -171,8 +171,8 @@ public final class Constants {
     public static final double kPlaceOnFloorBoomLength = 0;
     public static final double kPlaceCubeOnLevel1BoomLength = 25.0;
     public static final double kPlaceCubeOnLevel2BoomLength = 0;
-    public static final double kPlaceConeOnLevel1BoomLength = 25.0;
-    public static final double kPlaceConeOnLevel2BoomLength = 230.0;
+    public static final double kPlaceConeOnLevel1BoomLength = 20.0;
+    public static final double kPlaceConeOnLevel2BoomLength = 210.0;
   }
 
   public static final class DriveConstants {

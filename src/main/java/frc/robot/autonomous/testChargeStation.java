@@ -23,22 +23,22 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.AutoBalanceCommand;
-import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.GripperSubsystem;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.gripper.Gripper;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class testChargeStation extends SequentialCommandGroup {
-  private final ArmSubsystem m_armSubsystem;
-  private final DriveSubsystem m_driveSubsystem;
-  private final GripperSubsystem m_gripperSubsystem;
+  private final Arm m_armSubsystem;
+  private final Drive m_driveSubsystem;
+  private final Gripper m_gripperSubsystem;
 
   /** Creates a new Load2 */
-  public testChargeStation(ArmSubsystem armSubsystem, DriveSubsystem driveSubsystem, GripperSubsystem gripperSubsystem) {
+  public testChargeStation(Arm armSubsystem, Drive m_driveSubsystem2, Gripper gripperSubsystem) {
     this.m_armSubsystem = armSubsystem;
-    this.m_driveSubsystem = driveSubsystem;
+    this.m_driveSubsystem = m_driveSubsystem2;
     this.m_gripperSubsystem = gripperSubsystem;
     addCommands(
       this.loadPath(),
