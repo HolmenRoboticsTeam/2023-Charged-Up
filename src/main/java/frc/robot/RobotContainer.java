@@ -4,77 +4,37 @@
 
 package frc.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ArmPositionConstants;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.AutonomousConstants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.autonomous.Load1CrossAutoChargeStationAutoCommand;
-import frc.robot.autonomous.Load1CrossChargeStationCrossAuto1;
-import frc.robot.autonomous.Load2CrossAuto1;
 import frc.robot.autonomous.Nothing;
 import frc.robot.autonomous.testChargeStation;
 import frc.robot.autonomous.Comp1;
 import frc.robot.autonomous.Comp2;
 import frc.robot.autonomous.Comp3;
 import frc.robot.autonomous.Comp4;
-import frc.robot.autonomous.CrossAuto;
-import frc.robot.autonomous.CrossAuto2;
-import frc.robot.autonomous.Load1;
-import frc.robot.autonomous.Load1ChargeStation1;
-import frc.robot.autonomous.Load1CrossAuto1Command;
-import frc.robot.autonomous.Load1CrossAuto2Command;
-import frc.robot.commands.ArmExtendToConeLevel2Command;
 import frc.robot.commands.ArmPivotToHomeCommand;
 import frc.robot.commands.ArmRetractToHomeCommand;
 import frc.robot.commands.ToggleCompressorStateCommand;
 import frc.robot.commands.ToggleGripperStateCommand;
 import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.CompressorSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.gripper.Gripper;
-import frc.robot.subsystems.LimelightSubsystem;
-import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.compressor.Compressor;
 import frc.robot.subsystems.compressor.CompressorIOReal;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIOReal;
-import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.gripper.GripperIOReal;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
-import java.util.HashMap;
-import java.util.List;
-
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -83,13 +43,10 @@ import com.pathplanner.lib.auto.SwerveAutoBuilder;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final UsbCamera m_cameraTwo = CameraServer.startAutomaticCapture();
   // The robot's subsystems
   private final Arm m_armSubsystem = new Arm(new ArmIOReal());
-  // private final CompressorSubsystem m_compressorSubystem = new CompressorSubsystem();
   private final Drive m_driveSubsystem = new Drive(new DriveIOReal());
   private final Gripper m_gripperSubsystem = new Gripper(new GripperIOReal());
-  private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem();
   private final Compressor m_compressorSubystem = new Compressor(new CompressorIOReal());
 
   // The robot's commands
@@ -98,18 +55,7 @@ public class RobotContainer {
   private final SequentialCommandGroup m_armGoHomeCommand = new SequentialCommandGroup(new ArmRetractToHomeCommand(m_armSubsystem), new ArmPivotToHomeCommand(m_armSubsystem));
 
   // The robot's autonomous routines
-  private final Load1ChargeStation1 m_load1ChargeStation1 = new Load1ChargeStation1(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
-  private final Load1CrossAuto1Command m_load1CrossAutoCommand = new Load1CrossAuto1Command(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
-  private final Load1CrossAuto2Command m_load1CrossAuto2Command = new Load1CrossAuto2Command(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
-  private final Load1CrossAutoChargeStationAutoCommand m_load1CrossAutoChargeStationAutoCommand = new Load1CrossAutoChargeStationAutoCommand(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
-  // private final Load1CrossChargeStationCrossAuto m_load1CrossChargeStationCrossAuto = new Load1CrossChargeStationCrossAuto(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
-  private final Load1CrossChargeStationCrossAuto1 m_load1CrossChargeStationCrossAuto1 = new Load1CrossChargeStationCrossAuto1(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
-  private final Load2CrossAuto1 m_load2CrossAuto1 = new Load2CrossAuto1(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
-  private final Load1 m_load1 = new Load1(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
   private final Nothing m_nothing = new Nothing(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
-  private final CrossAuto m_crossAuto = new CrossAuto(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
-  private final CrossAuto2 m_crossAuto2 = new CrossAuto2(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
-
   private final Comp1 m_comp1 = new Comp1(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
   private final Comp2 m_comp2 = new Comp2(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
   private final Comp3 m_comp3 = new Comp3(m_armSubsystem, m_driveSubsystem, m_gripperSubsystem);
@@ -139,10 +85,6 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    // Camera settings, self explanatory
-    // m_cameraTwo.setResolution(176, 144);
-    // m_cameraTwo.setFPS(30);
-
     // Configure the button bindings
     this.configureButtonBindings();
 
@@ -281,15 +223,6 @@ public class RobotContainer {
     this.m_setXButton.toggleOnTrue(
       new RunCommand(this.m_driveSubsystem::setX, this.m_driveSubsystem)
     );
-    // m_autoChooser.setDefaultOption("Load 1 Cross Auto 1", this.m_load1CrossAutoCommand);
-    // m_autoChooser.addOption("Load 1, cross, and balance", this.m_load1CrossAutoChargeStationAutoCommand);
-    // m_autoChooser.addOption("Load 2 Cross Auto 1", this.m_load2CrossAuto1);
-    // m_autoChooser.addOption("Load 1 Cross Auto 2", this.m_load1CrossAuto2Command);
-    // m_autoChooser.addOption("Load 1 Charge Station 1", this.m_load1ChargeStation1);
-    // m_autoChooser.addOption("Load 2 Cross Auto Charge Station 1", this.m_load1CrossChargeStationCrossAuto1);
-    // m_autoChooser.addOption("Load1", this.m_load1);
-    // m_autoChooser.addOption("Cross Auto", this.m_crossAuto);
-    // m_autoChooser.addOption("Cross Auto 2", this.m_crossAuto2);
 
     m_autoChooser.setDefaultOption("Charge Station Only", m_testChargeStation);
     m_autoChooser.addOption("Comp-1", m_comp1);
@@ -298,11 +231,7 @@ public class RobotContainer {
     m_autoChooser.addOption("Comp-4", m_comp4);
     m_autoChooser.addOption("Nothing", this.m_nothing);
 
-
-    // m_chooser.addOption("Load 3, cross", blueLoad3CrossAuto());
-    // m_chooser.addOption("Load 2, cross", blueLoad2CrossAuto());
     SmartDashboard.putData(m_autoChooser);
-
   }
 
   /**
