@@ -4,14 +4,18 @@
 
 package frc.robot.subsystems.drive;
 
+import java.util.Optional;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.EstimatedRobotPose;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -26,6 +30,7 @@ import edu.wpi.first.wpilibj.SerialPort.Port;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.MAXSwerveModule;
+import frc.utils.PhotonCameraWrapper;
 import frc.utils.SwerveUtils;
 
 /** Add your docs here. */
@@ -54,7 +59,10 @@ public class DriveIOReal implements DriveIO {
 
   // The gyro sensor
   private final AHRS m_gyro = new AHRS(Port.kUSB1);
-  
+
+  // The photonVistionWrapper
+  private final PhotonCameraWrapper pcw = new PhotonCameraWrapper();
+
   private final ScheduledThreadPoolExecutor m_executor = new ScheduledThreadPoolExecutor(1);
 
   // Motion profiling
@@ -72,15 +80,28 @@ public class DriveIOReal implements DriveIO {
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
   // Odometry class for tracking robot pose
-  SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
+  // SwerveDriveOdometry m_poseEstimator = new SwerveDriveOdometry(
+  // DriveConstants.kDriveKinematics,
+  // Rotation2d.fromDegrees(this.getHeading()),
+  // new SwerveModulePosition[] {
+  // m_frontLeft.getPosition(),
+  // m_frontRight.getPosition(),
+  // m_rearLeft.getPosition(),
+  // m_rearRight.getPosition()
+  // });
+
+  private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
       DriveConstants.kDriveKinematics,
-      Rotation2d.fromDegrees(this.getHeading()),
+      m_gyro.getRotation2d(),
       new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
-      });
+      },
+      new Pose2d(),
+      VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+      VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
   private SwerveModuleState[] m_desiredStates = { new SwerveModuleState(), new SwerveModuleState(),
       new SwerveModuleState(), new SwerveModuleState() };
 
@@ -95,31 +116,36 @@ public class DriveIOReal implements DriveIO {
     m_rearRight.updateInputs(inputs, 3);
     Logger.getInstance().recordOutput("SwerveDriveSetPoints", m_desiredStates);
     Logger.getInstance().recordOutput("SwerveModuleStates", new SwerveModuleState[] {
-      m_frontLeft.getState(),
-      m_frontRight.getState(),
-      m_rearLeft.getState(),
-      m_rearRight.getState()
+        m_frontLeft.getState(),
+        m_frontRight.getState(),
+        m_rearLeft.getState(),
+        m_rearRight.getState()
     });
-    m_odometry.update(
-      Rotation2d.fromDegrees(this.getHeading()),
-      new SwerveModulePosition[] {
-        m_frontLeft.getPosition(),
-        m_frontRight.getPosition(),
-        m_rearLeft.getPosition(),
-        m_rearRight.getPosition()
-      }
-    );
-    Logger.getInstance().recordOutput("RobotOdometry", this.m_odometry.getPoseMeters());
+    m_poseEstimator.update(
+        Rotation2d.fromDegrees(this.getHeading()),
+        new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+        });
+    Optional<EstimatedRobotPose> result = pcw.getEstimatedGlobalPose(m_poseEstimator.getEstimatedPosition());
+    if (result.isPresent()) {
+      EstimatedRobotPose camPose = result.get();
+      m_poseEstimator.addVisionMeasurement(
+          camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
+    }
+    Logger.getInstance().recordOutput("RobotOdometry", this.getPose());
     inputs.heading = Units.degreesToRadians(-this.m_gyro.getAngle() - 180);
   }
 
-    /**
+  /**
    * Returns the currently-estimated pose of the robot.
    *
    * @return The pose.
    */
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    return m_poseEstimator.getEstimatedPosition();
   }
 
   /**
@@ -128,7 +154,7 @@ public class DriveIOReal implements DriveIO {
    * @param pose The pose to which to set the odometry.
    */
   public void setPose(Pose2d pose) {
-    m_odometry.resetPosition(
+    m_poseEstimator.resetPosition(
         Rotation2d.fromDegrees(this.getHeading()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
