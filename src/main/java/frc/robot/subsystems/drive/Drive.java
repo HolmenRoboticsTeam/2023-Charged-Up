@@ -31,6 +31,10 @@ public class Drive extends SubsystemBase {
     return this.io.getPose();
   }
 
+  public Pose2d getPoseAuto() {
+    return this.io.getPoseAuto();
+  }
+
   public void setPose(Pose2d pose) {
     this.io.setPose(pose);
   }

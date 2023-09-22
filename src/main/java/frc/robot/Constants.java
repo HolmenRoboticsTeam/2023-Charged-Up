@@ -59,7 +59,7 @@ public final class Constants {
 
   public static final class AutonomousConstants {
     public static final double kMaxVelocity = 1.25; // max velocity in 4 m/s
-    public static final double kMaxAcceleration = 3.0; // max acceleration in 3 m/s^2
+    public static final double kMaxAcceleration = 2.0; // max acceleration in 3 m/s^2
 
     public static final HashMap<String, Command> eventMap = new HashMap<>();
 
@@ -181,8 +181,8 @@ public final class Constants {
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 4.0; // 4.8 IS MAX SPEED
-    public static final double kMaxAngularSpeed = 2.0 * Math.PI; // radians per second
+    public static final double kMaxSpeedMetersPerSecond = 1.4; // 4.8 IS MAX SPEED
+    public static final double kMaxAngularSpeed = Math.PI; // radians per second
     public static final double kMaxAnguolarSpeedSquared = 2.0 * Math.PI; // radians per secondF
     public static final double kSwerveTargetingOffset = 630.0; // Degrees
 
@@ -321,7 +321,7 @@ public final class Constants {
 
   public static class VisionConstants {
     public static final Transform3d robotToCam = new Transform3d(
-        new Translation3d(0.5, 0.0, 0.5),
+        new Translation3d(Units.inchesToMeters(-7), 0.0, Units.inchesToMeters(33)),
         new Rotation3d(
             0, 0,
             0)); // Cam mounted facing forward, half a meter forward of center, half a meter up

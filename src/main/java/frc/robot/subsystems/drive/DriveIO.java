@@ -24,6 +24,7 @@ public interface DriveIO {
     public default void updateOdometry() {}
     public default void updateInputs(DriveIOInputs inputs) {}
     public default Pose2d getPose() {return null;}
+    public default Pose2d getPoseAuto() {return null;}
     public default void setPose(Pose2d pose) {}
     public default void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {}
     public default void headingDrive(double throttle, double strafe, double desiredAngle, boolean fieldRelative) {}

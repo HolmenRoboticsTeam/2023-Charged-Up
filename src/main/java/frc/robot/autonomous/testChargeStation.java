@@ -63,7 +63,7 @@ public class testChargeStation extends SequentialCommandGroup {
     eventMap.put("stopInXPattern", this.stopInXPattern());
 
     SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-      this.m_driveSubsystem::getPose,             // Pose2d supplier
+      this.m_driveSubsystem::getPoseAuto,             // Pose2d supplier
       this.m_driveSubsystem::setPose,             // Pose2d consumer, used to reset odometry at the beginning of auto
       DriveConstants.kDriveKinematics,            // SwerveDriveKinematics ***UNDEFINED AT THE MOMENT 1/30/2023***
       AutonomousConstants.kPIDTranslationAuto,         // PID constants to correct for translation error (used to create the X and Y PID controllers)

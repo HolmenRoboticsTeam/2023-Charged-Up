@@ -11,38 +11,25 @@
         "vgap": 16.0,
         "titleType": 0,
         "tiles": {
-          "0,0": {
+          "1,0": {
             "size": [
-              6,
+              5,
               4
             ],
             "content": {
               "_type": "Camera Stream",
-              "_source0": "camera_server://USB Camera 0",
-              "_title": "USB Camera 0",
+              "_source0": "camera_server://photonvision_Port_1181_MJPEG_Server",
+              "_title": "Camera",
               "_glyph": 148,
               "_showGlyph": false,
-              "Crosshair/Show crosshair": false,
+              "Crosshair/Show crosshair": true,
               "Crosshair/Crosshair color": "#FFFFFFFF",
-              "Controls/Show controls": false,
+              "Controls/Show controls": true,
               "Controls/Rotation": "NONE",
               "compression": -1.0,
               "fps": -1,
               "imageWidth": -1,
               "imageHeight": -1
-            }
-          },
-          "6,3": {
-            "size": [
-              4,
-              1
-            ],
-            "content": {
-              "_type": "Split Button Chooser",
-              "_source0": "network_table:///SmartDashboard/SendableChooser[0]",
-              "_title": "Autonomous Routine",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "8,0": {
@@ -52,8 +39,8 @@
             ],
             "content": {
               "_type": "Gyro",
-              "_source0": "network_table:///SmartDashboard/Arm Angle Degrees",
-              "_title": "Arm Angle Degrees",
+              "_source0": "network_table:///AdvantageKit/Arm/BoomAngle",
+              "_title": "Boom Angle",
               "_glyph": 148,
               "_showGlyph": false,
               "Visuals/Major tick spacing": 45.0,
@@ -69,8 +56,8 @@
             ],
             "content": {
               "_type": "Number Bar",
-              "_source0": "network_table:///SmartDashboard/Arm Boom Length Meters",
-              "_title": "Boom Length",
+              "_source0": "network_table:///AdvantageKit/Arm/BoomLength",
+              "_title": "AdvantageKit/Arm/BoomLength",
               "_glyph": 148,
               "_showGlyph": false,
               "Range/Min": 0.0,
@@ -83,13 +70,28 @@
           },
           "6,2": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
               "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/Compressor Enable State",
-              "_title": "Compressor State",
+              "_source0": "network_table:///AdvantageKit/Compressor/CompressorIsEnabled",
+              "_title": "C. Enabled",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "7,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///AdvantageKit/Compressor/CompressorIsOn",
+              "_title": "C. Running",
               "_glyph": 148,
               "_showGlyph": false,
               "Colors/Color when true": "#7CFC00FF",
@@ -102,15 +104,11 @@
               2
             ],
             "content": {
-              "_type": "Gyro",
-              "_source0": "network_table:///SmartDashboard/Robot Heading",
-              "_title": "Robot Heading",
+              "_type": "Text View",
+              "_source0": "network_table:///AdvantageKit/Drive/Heading",
+              "_title": "Heading",
               "_glyph": 148,
-              "_showGlyph": false,
-              "Visuals/Major tick spacing": 45.0,
-              "Visuals/Starting angle": 180.0,
-              "Visuals/Show tick mark ring": true,
-              "Visuals/Counter clockwise": false
+              "_showGlyph": false
             }
           }
         }

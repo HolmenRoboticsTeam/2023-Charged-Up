@@ -80,19 +80,19 @@ public class DriveIOReal implements DriveIO {
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
   // Odometry class for tracking robot pose
-  // SwerveDriveOdometry m_poseEstimator = new SwerveDriveOdometry(
-  // DriveConstants.kDriveKinematics,
-  // Rotation2d.fromDegrees(this.getHeading()),
-  // new SwerveModulePosition[] {
-  // m_frontLeft.getPosition(),
-  // m_frontRight.getPosition(),
-  // m_rearLeft.getPosition(),
-  // m_rearRight.getPosition()
-  // });
+  SwerveDriveOdometry m_poseEstimatorAuto = new SwerveDriveOdometry(
+      DriveConstants.kDriveKinematics,
+      Rotation2d.fromDegrees(this.getHeading()),
+      new SwerveModulePosition[] {
+          m_frontLeft.getPosition(),
+          m_frontRight.getPosition(),
+          m_rearLeft.getPosition(),
+          m_rearRight.getPosition()
+      });
 
   private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
       DriveConstants.kDriveKinematics,
-      m_gyro.getRotation2d(),
+      Rotation2d.fromDegrees(this.getHeading()),
       new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
@@ -129,6 +129,14 @@ public class DriveIOReal implements DriveIO {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
+    m_poseEstimatorAuto.update(
+        Rotation2d.fromDegrees(this.getHeading()),
+        new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+        });
     Optional<EstimatedRobotPose> result = pcw.getEstimatedGlobalPose(m_poseEstimator.getEstimatedPosition());
     if (result.isPresent()) {
       EstimatedRobotPose camPose = result.get();
@@ -146,6 +154,10 @@ public class DriveIOReal implements DriveIO {
    */
   public Pose2d getPose() {
     return m_poseEstimator.getEstimatedPosition();
+  }
+
+  public Pose2d getPoseAuto() {
+    return m_poseEstimatorAuto.getPoseMeters();
   }
 
   /**
