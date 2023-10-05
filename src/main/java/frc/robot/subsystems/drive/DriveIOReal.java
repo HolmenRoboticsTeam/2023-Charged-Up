@@ -143,8 +143,10 @@ public class DriveIOReal implements DriveIO {
       m_poseEstimator.addVisionMeasurement(
           camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
     }
-    Logger.getInstance().recordOutput("RobotOdometry", this.getPose());
-    inputs.heading = Units.degreesToRadians(-this.m_gyro.getAngle() - 180);
+    Logger.getInstance().recordOutput("RobotEstimator", this.getPose());
+    Logger.getInstance().recordOutput("RobotOdometry", this.getPoseAuto());
+    inputs.headingDegrees = -this.m_gyro.getAngle() - 180;
+    inputs.heading = Units.degreesToRadians(inputs.headingDegrees);
   }
 
   /**
@@ -175,7 +177,15 @@ public class DriveIOReal implements DriveIO {
             m_rearRight.getPosition()
         },
         pose);
-  }
+        m_poseEstimatorAuto.resetPosition(
+        Rotation2d.fromDegrees(this.getHeading()),
+        new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+        },
+        pose);}
 
   /**
    * Method to drive the robot using joystick info.

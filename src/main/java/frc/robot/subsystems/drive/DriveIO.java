@@ -14,6 +14,7 @@ public interface DriveIO {
     @AutoLog
     public static class DriveIOInputs {
         public double heading;
+        public double headingDegrees;
         
         public double[] driveMotorTemp = {0.0, 0.0, 0.0, 0.0};
         public double[] driveMotorCurrentDraw = {0.0, 0.0, 0.0, 0.0};
