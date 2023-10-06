@@ -304,6 +304,20 @@ public class DriveIOReal implements DriveIO {
     this.headingDrive(throttle, strafe, desiredAngle, true);
   }
 
+  public void headingDrive(double throttle, double xStrafe, double yStrafe, double xRotation, double yRotation, boolean fieldRelative) {
+    // Calculate theta difference between current and desired
+    double desiredAngle = Math.atan2(yRotation, xRotation);
+
+    if (Math.abs(xRotation) < OIConstants.kDriveDeadband && Math.abs(yRotation) < OIConstants.kDriveDeadband) {
+      this.drive(xStrafe * throttle, yStrafe * throttle, 0.0, true, true);
+      return;
+    }
+    ;
+
+    // Send the drive speed to the main drive method
+    this.headingDrive(xStrafe * throttle, yStrafe * throttle, desiredAngle, true);
+  }
+
   /**
    * Sets the wheels into an X formation to prevent movement.
    */

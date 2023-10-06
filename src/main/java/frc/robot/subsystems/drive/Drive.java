@@ -51,6 +51,10 @@ public class Drive extends SubsystemBase {
     this.io.headingDrive(throttle, strafe, xRotation, yRotation, fieldRelative);
   }
 
+  public void headingDrive(double throttle, double xStrafe, double yStrafe, double xRotation, double yRotation, boolean fieldRelative) {
+    this.io.headingDrive(throttle, xStrafe, yStrafe, xRotation, yRotation, fieldRelative);
+  }
+
   public void setX() {
     this.io.setX();
   }

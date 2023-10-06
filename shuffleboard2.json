@@ -98,17 +98,34 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
+          "6,3": {
+            "size": [
+              4,
+              1
+            ],
+            "content": {
+              "_type": "Split Button Chooser",
+              "_source0": "network_table:///SmartDashboard/SendableChooser[0]",
+              "_title": "Autonomous Selection",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
           "6,0": {
             "size": [
               2,
               2
             ],
             "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///AdvantageKit/Drive/Heading",
+              "_type": "Gyro",
+              "_source0": "network_table:///AdvantageKit/Drive/HeadingDegrees",
               "_title": "Heading",
               "_glyph": 148,
-              "_showGlyph": false
+              "_showGlyph": false,
+              "Visuals/Major tick spacing": 45.0,
+              "Visuals/Starting angle": 180.0,
+              "Visuals/Show tick mark ring": true,
+              "Visuals/Counter clockwise": false
             }
           }
         }

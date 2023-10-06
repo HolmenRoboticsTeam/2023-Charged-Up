@@ -30,6 +30,7 @@ public interface DriveIO {
     public default void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {}
     public default void headingDrive(double throttle, double strafe, double desiredAngle, boolean fieldRelative) {}
     public default void headingDrive(double throttle, double strafe, double xRotation, double yRotation, boolean fieldRelative) {}
+    public default void headingDrive(double throttle, double xStrafe, double yStrafe, double xRotation, double yRotation, boolean fieldRelative) {}
 
     public default void setX() {}
     public default void setModuleStates(SwerveModuleState[] desiredStates) {}
